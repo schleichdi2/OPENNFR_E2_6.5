@@ -268,7 +268,7 @@ class NfrHD_Config(Screen, ConfigListScreen):
 			current_ch_se = self.getCurrentCh_se() 
 			ch_se_choices = self.getPossibleCh_se()
 			default_ch_se = ("default")
-			config.myNfrHD_ch_se = ConfigSelection(default=default_ch_se, choices = ch_se_choices)		
+			config.myNfrHD_ch_se = ConfigSelection(default=default_ch_se, choices = ch_se_choices)
 			if current_ch_se is None:
 				current_ch_se = default_ch_se
 			if default_ch_se not in ch_se_choices:
@@ -2875,7 +2875,7 @@ class DefaulSkinchange(ConfigListScreen, Screen):
 		config.misc.skindefaultwizardenabled.save()
 		configfile.save()
 		if config.defaultskinSetup.steps.value == "nothing":
-			self.session.open(MessageBox,_("nothing selected Utopia will be used without reboot!"), MessageBox.TYPE_INFO, timeout=5)
+			self.session.open(MessageBox,_("nothing selected Opennfr will be used without reboot!"), MessageBox.TYPE_INFO, timeout=5)
 			self.close()
 		else:
 			self.session.open(MessageBox,_("Box will reboot to activated selected Defaultskin"), MessageBox.TYPE_INFO, timeout=5)
