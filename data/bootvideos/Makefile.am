@@ -1,0 +1,1 @@
+installdir = $(pkgdatadir)/bootvideos
