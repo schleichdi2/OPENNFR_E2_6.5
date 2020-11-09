@@ -295,7 +295,7 @@ class Standby2(Screen):
 			self.oldService = eServiceReference(config.servicelist.startupservice_standby.value)
 		else:
 			self.prev_running_service = self.session.nav.getCurrentlyPlayingServiceOrGroup()
-		self.session.nav.stopService()		
+			self.session.nav.stopService()		
 		
 class Standby(Standby2):
 	def __init__(self, session):
