@@ -13,7 +13,8 @@ class ActionMap:
 		self.p = eActionMap.getInstance()
 		self.bound = False
 		self.exec_active = False
-
+		self.enabled = True
+		
 	def setEnabled(self, enabled):
 		self.enabled = enabled
 		self.checkBind()
