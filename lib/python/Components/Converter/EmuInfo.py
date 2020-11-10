@@ -209,7 +209,7 @@ class EmuInfo(Converter, object):
 				ecmtime2 = ecmtime
 				emun = 'Unknown EMU'
 			if protocol != '' and reader != '':
-				emun = 'EMU : OsCam'
+				emun = 'OsCam'
 				if float(ecmtime) >= 1:
 					ecmtime2 = str(ecmtime) + ' s'
 				else:
