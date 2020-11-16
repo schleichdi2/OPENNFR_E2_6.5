@@ -36,7 +36,7 @@ SPACE = u"SPACEICON"  # Symbol to be used for a SPACE on the keyboard.  Must be 
 class VirtualKeyBoardList(MenuList):
 	def __init__(self, list, enableWrapAround=False):
 		MenuList.__init__(self, list, enableWrapAround, eListboxPythonMultiContent)
-		font = fonts.get("VirtualKeyBoard", ("Regular", 28, 86))
+		font = fonts.get("VirtualKeyBoard", ("Regular", 28, 45))
 		self.l.setFont(0, gFont(font[0], font[1]))
 		self.l.setFont(1, gFont(font[0], font[1] * 5 // 9))  # Smaller font is 56% the height of bigger font
 		self.l.setItemHeight(font[2])
@@ -536,7 +536,7 @@ class VirtualKeyBoard(Screen, HelpableScreen):
 		self["key_blue"] = StaticText(self.shiftMsgs[1])
 		self["key_text"] = StaticText(_("TEXT"))
 		self["key_help"] = StaticText(_("HELP"))
-		width, height = parameters.get("VirtualKeyBoard", (86, 90))
+		width, height = parameters.get("VirtualKeyBoard", (45, 45))
 		if self.bg_l is None or self.bg_m is None or self.bg_r is None:
 			self.width = width
 			self.height = height
