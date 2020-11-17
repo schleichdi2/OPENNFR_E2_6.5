@@ -127,10 +127,10 @@ class HddInfo(ConfigListScreen, Screen):
 			time.sleep(1)                        		
 		hddtemp = os.popen("/usr/sbin/hddtemp -q %s >/tmp/tmpa.txt" % device)
 		time.sleep(1)
-		with open("/tmp/tmpa.txt", 'r', encoding='utf-8') as f:
+		with open("/tmp/tmpa.txt", 'r', encoding='windows-1252') as f:
 			lines = f.readlines()
-		for line in lines:
-			temp = re.findall(tempRe, line)
+			for line in lines:
+				temp = re.findall(tempRe, line)
 			if temp:
 				self["temp"].setText("Disk temperature: %s" % temp[0].lstrip())
 		f.close()
