@@ -34,7 +34,7 @@ from twisted.web.client import downloadPage
 from twisted.web import client, error as weberror
 from twisted.internet import reactor
 from twisted.internet import defer
-from urllib import urlencode
+from urllib.parse import urlencode
 import sys, os, re, shutil, time
 from threading import Thread
 from os import listdir as os_listdir, path as os_path
@@ -284,10 +284,10 @@ class BackgroundCoverScanner(Thread):
 		if type == "movie":
 			list = []
 			try:
-                          	list = re.search('poster_path":"(.+?)".*?"original_title":"(.+?)"', str(data), re.S).groups(1)
-                        except:
-                        	list = re.search('original_title":"(.+?)".*?"poster_path":"(.+?)"', str(data), re.S).groups(1)
-                        if list:
+				list = re.search('poster_path":"(.+?)".*?"original_title":"(.+?)"', str(data), re.S).groups(1)
+			except:
+				list = re.search('original_title":"(.+?)".*?"poster_path":"(.+?)"', str(data), re.S).groups(1)
+			if list:
 				self.guilist.append(((title, True, filename),))
 				purl = "http://image.tmdb.org/t/p/%s%s" % (str(config.movielist.cover.themoviedb_coversize.value), str(list[0].replace('\\','')))
 				downloadPage(purl, filename).addCallback(self.countFound).addErrback(self.dataErrorDownload)
@@ -322,7 +322,7 @@ class BackgroundCoverScanner(Thread):
 			if config.movielist.cover.getdescription.value:
 				if season and episode:
 					iurl = "http://www.thetvdb.com/api/2AAF0562E31BCEEC/series/%s/default/%s/%s/de.xml" % (list[0], str(int(season)), str(int(episode)))
-                                        getPage(iurl, headers={'Content-Type':'application/x-www-form-urlencoded'}).addCallback(self.getInfos, id, type, filename).addErrback(self.dataError)
+					getPage(iurl, headers={'Content-Type':'application/x-www-form-urlencoded'}).addCallback(self.getInfos, id, type, filename).addErrback(self.dataError)
 		else:
 			self.notfound += 1
 			if not self.background:
@@ -675,7 +675,7 @@ class FindMovieListScanPath(Screen):
 			self.fullpath = self["folderlist"].getSelection()[0]
 		else:
 			self.fullpath = self["folderlist"].getSelection()[0] + "/"
-	  	self.close(self.fullpath)
+			self.close(self.fullpath)
 
 	def up(self):
 		self["folderlist"].up()
@@ -702,112 +702,112 @@ class FindMovieListScanPath(Screen):
 		currFolder = self["folderlist"].getSelection()[0]
 		self["media"].setText(currFolder)
 
-def decodeHtml(text):
-	text = text.replace('&auml;','ÃƒÂ¤')
-	text = text.replace('\u00e4','ÃƒÂ¤')
-	text = text.replace('&#228;','ÃƒÂ¤')
-	text = text.replace('&Auml;','Ãƒâ€ž')
-	text = text.replace('\u00c4','Ãƒâ€ž')
-	text = text.replace('&#196;','Ãƒâ€ž')
-	text = text.replace('&ouml;','ÃƒÂ¶')
-	text = text.replace('\u00f6','ÃƒÂ¶')
-	text = text.replace('&#246;','ÃƒÂ¶')
-	text = text.replace('&ouml;','Ãƒâ€“')
-	text = text.replace('&Ouml;','Ãƒâ€“')
-	text = text.replace('\u00d6','Ãƒâ€“')
-	text = text.replace('&#214;','Ãƒâ€“')
-	text = text.replace('&uuml;','ÃƒÂ¼')
-	text = text.replace('\u00fc','ÃƒÂ¼')
-	text = text.replace('&#252;','ÃƒÂ¼')
-	text = text.replace('&Uuml;','ÃƒÅ“')
-	text = text.replace('\u00dc','ÃƒÅ“')
-	text = text.replace('&#220;','ÃƒÅ“')
-	text = text.replace('&szlig;','ÃƒÅ¸')
-	text = text.replace('\u00df','ÃƒÅ¸')
-	text = text.replace('&#223;','ÃƒÅ¸')
-	text = text.replace('&amp;','&')
-	text = text.replace('&quot;','\"')
-	text = text.replace('&gt;','>')
-	text = text.replace('&apos;',"'")
-	text = text.replace('&acute;','\'')
-	text = text.replace('&ndash;','-')
-	text = text.replace('&bdquo;','"')
-	text = text.replace('&rdquo;','"')
-	text = text.replace('&ldquo;','"')
-	text = text.replace('&lsquo;','\'')
-	text = text.replace('&rsquo;','\'')
-	text = text.replace('&#034;','"')
-	text = text.replace('&#34;','"')
-	text = text.replace('&#038;','&')
-	text = text.replace('&#039;','\'')
-	text = text.replace('&#39;','\'')
-	text = text.replace('&#160;',' ')
-	text = text.replace('\u00a0',' ')
-	text = text.replace('\u00b4','\'')
-	text = text.replace('\u003d','=')
-	text = text.replace('\u0026','&')
-	text = text.replace('&#174;','')
-	text = text.replace('&#225;','a')
-	text = text.replace('&#233;','e')
-	text = text.replace('&#243;','o')
-	text = text.replace('&#8211;',"-")
-	text = text.replace('&#8212;',"Ã¢â‚¬â€")
-	text = text.replace('&mdash;','Ã¢â‚¬â€')
-	text = text.replace('\u2013',"Ã¢â‚¬â€œ")
-	text = text.replace('&#8216;',"'")
-	text = text.replace('&#8217;',"'")
-	text = text.replace('&#8220;',"'")
-	text = text.replace('&#8221;','"')
-	text = text.replace('&#8222;',',')
-	text = text.replace('\u014d','Ã…Â')
-	text = text.replace('\u016b','Ã…Â«')
-	text = text.replace('\u201a','\"')
-	text = text.replace('\u2018','\"')
-	text = text.replace('\u201e','\"')
-	text = text.replace('\u201c','\"')
-	text = text.replace('\u201d','\'')
-	text = text.replace('\u2019s','Ã¢â‚¬â„¢')
-	text = text.replace('\u00e0','ÃƒÂ ')
-	text = text.replace('\u00e7','ÃƒÂ§')
-	text = text.replace('\u00e8','ÃƒÂ©')
-	text = text.replace('\u00e9','ÃƒÂ©')
-	text = text.replace('\u00c1','ÃƒÂ')
-	text = text.replace('\u00c6','Ãƒâ€ ')
-	text = text.replace('\u00e1','ÃƒÂ¡')
-	text = text.replace('&#xC4;','Ãƒâ€ž')
-	text = text.replace('&#xD6;','Ãƒâ€“')
-	text = text.replace('&#xDC;','ÃƒÅ“')
-	text = text.replace('&#xE4;','ÃƒÂ¤')
-	text = text.replace('&#xF6;','ÃƒÂ¶')
-	text = text.replace('&#xFC;','ÃƒÂ¼')
-	text = text.replace('&#xDF;','ÃƒÅ¸')
-	text = text.replace('&#xE9;','ÃƒÂ©')
-	text = text.replace('&#xB7;','Ã‚Â·')
-	text = text.replace("&#x27;","'")
-	text = text.replace("&#x26;","&")
-	text = text.replace("&#xFB;","ÃƒÂ»")
-	text = text.replace("&#xF8;","ÃƒÂ¸")
-	text = text.replace("&#x21;","!")
-	text = text.replace("&#x3f;","?")
-	text = text.replace('&#8230;','...')
-	text = text.replace('\u2026','...')
-	text = text.replace('&hellip;','...')
-	text = text.replace('&#8234;','')
-	return text
+	def decodeHtml(text):
+		text = text.replace('&auml;','ÃƒÂ¤')
+		text = text.replace('\u00e4','ÃƒÂ¤')
+		text = text.replace('&#228;','ÃƒÂ¤')
+		text = text.replace('&Auml;','Ãƒâ€ž')
+		text = text.replace('\u00c4','Ãƒâ€ž')
+		text = text.replace('&#196;','Ãƒâ€ž')
+		text = text.replace('&ouml;','ÃƒÂ¶')
+		text = text.replace('\u00f6','ÃƒÂ¶')
+		text = text.replace('&#246;','ÃƒÂ¶')
+		text = text.replace('&ouml;','Ãƒâ€“')
+		text = text.replace('&Ouml;','Ãƒâ€“')
+		text = text.replace('\u00d6','Ãƒâ€“')
+		text = text.replace('&#214;','Ãƒâ€“')
+		text = text.replace('&uuml;','ÃƒÂ¼')
+		text = text.replace('\u00fc','ÃƒÂ¼')
+		text = text.replace('&#252;','ÃƒÂ¼')
+		text = text.replace('&Uuml;','ÃƒÅ“')
+		text = text.replace('\u00dc','ÃƒÅ“')
+		text = text.replace('&#220;','ÃƒÅ“')
+		text = text.replace('&szlig;','ÃƒÅ¸')
+		text = text.replace('\u00df','ÃƒÅ¸')
+		text = text.replace('&#223;','ÃƒÅ¸')
+		text = text.replace('&amp;','&')
+		text = text.replace('&quot;','\"')
+		text = text.replace('&gt;','>')
+		text = text.replace('&apos;',"'")
+		text = text.replace('&acute;','\'')
+		text = text.replace('&ndash;','-')
+		text = text.replace('&bdquo;','"')
+		text = text.replace('&rdquo;','"')
+		text = text.replace('&ldquo;','"')
+		text = text.replace('&lsquo;','\'')
+		text = text.replace('&rsquo;','\'')
+		text = text.replace('&#034;','"')
+		text = text.replace('&#34;','"')
+		text = text.replace('&#038;','&')
+		text = text.replace('&#039;','\'')
+		text = text.replace('&#39;','\'')
+		text = text.replace('&#160;',' ')
+		text = text.replace('\u00a0',' ')
+		text = text.replace('\u00b4','\'')
+		text = text.replace('\u003d','=')
+		text = text.replace('\u0026','&')
+		text = text.replace('&#174;','')
+		text = text.replace('&#225;','a')
+		text = text.replace('&#233;','e')
+		text = text.replace('&#243;','o')
+		text = text.replace('&#8211;',"-")
+		text = text.replace('&#8212;',"Ã¢â‚¬â€")
+		text = text.replace('&mdash;','Ã¢â‚¬â€')
+		text = text.replace('\u2013',"Ã¢â‚¬â€œ")
+		text = text.replace('&#8216;',"'")
+		text = text.replace('&#8217;',"'")
+		text = text.replace('&#8220;',"'")
+		text = text.replace('&#8221;','"')
+		text = text.replace('&#8222;',',')
+		text = text.replace('\u014d','Ã…Â')
+		text = text.replace('\u016b','Ã…Â«')
+		text = text.replace('\u201a','\"')
+		text = text.replace('\u2018','\"')
+		text = text.replace('\u201e','\"')
+		text = text.replace('\u201c','\"')
+		text = text.replace('\u201d','\'')
+		text = text.replace('\u2019s','Ã¢â‚¬â„¢')
+		text = text.replace('\u00e0','ÃƒÂ ')
+		text = text.replace('\u00e7','ÃƒÂ§')
+		text = text.replace('\u00e8','ÃƒÂ©')
+		text = text.replace('\u00e9','ÃƒÂ©')
+		text = text.replace('\u00c1','ÃƒÂ')
+		text = text.replace('\u00c6','Ãƒâ€ ')
+		text = text.replace('\u00e1','ÃƒÂ¡')
+		text = text.replace('&#xC4;','Ãƒâ€ž')
+		text = text.replace('&#xD6;','Ãƒâ€“')
+		text = text.replace('&#xDC;','ÃƒÅ“')
+		text = text.replace('&#xE4;','ÃƒÂ¤')
+		text = text.replace('&#xF6;','ÃƒÂ¶')
+		text = text.replace('&#xFC;','ÃƒÂ¼')
+		text = text.replace('&#xDF;','ÃƒÅ¸')
+		text = text.replace('&#xE9;','ÃƒÂ©')
+		text = text.replace('&#xB7;','Ã‚Â·')
+		text = text.replace("&#x27;","'")
+		text = text.replace("&#x26;","&")
+		text = text.replace("&#xFB;","ÃƒÂ»")
+		text = text.replace("&#xF8;","ÃƒÂ¸")
+		text = text.replace("&#x21;","!")
+		text = text.replace("&#x3f;","?")
+		text = text.replace('&#8230;','...')
+		text = text.replace('\u2026','...')
+		text = text.replace('&hellip;','...')
+		text = text.replace('&#8234;','')
+		return text
 
-def autostart(session, **kwargs):
-	BackgroundCoverScanner(session)
-	bg_func = BackgroundCoverScanner.instance
-	bg_func.startTimer()
+	def autostart(session, **kwargs):
+		BackgroundCoverScanner(session)
+		bg_func = BackgroundCoverScanner.instance
+		bg_func.startTimer()
 
-def main(session, service, **kwargs):
-	session.open(FindMovieList, service)
+	def main(session, service, **kwargs):
+		session.open(FindMovieList, service)
 
-def main2(session, **kwargs):
-	session.open(FindMovieList, None)
+	def main2(session, **kwargs):
+		session.open(FindMovieList, None)
 
-def Plugins(**kwargs):
-	return [PluginDescriptor(name="Find MovieList Covers", description="Search Covers", where = PluginDescriptor.WHERE_MOVIELIST, fnc=main),
+	def Plugins(**kwargs):
+		return [PluginDescriptor(name="Find MovieList Covers", description="Search Covers", where = PluginDescriptor.WHERE_MOVIELIST, fnc=main),
 			PluginDescriptor(name="Find MovieList Covers", description="Search Covers", where = PluginDescriptor.WHERE_PLUGINMENU, fnc=main2),
 			PluginDescriptor(where=[PluginDescriptor.WHERE_SESSIONSTART], fnc=autostart)
 			]
