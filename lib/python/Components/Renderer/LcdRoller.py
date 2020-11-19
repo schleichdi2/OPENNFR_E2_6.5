@@ -69,26 +69,26 @@ class LcdRoller(VariableText, Renderer):
 				self.x = 2
 				self.direct = "R"
 				self.instance.move(ePoint(self.x,self.posY))
-				self.moveLCD1Text.start(2000)						
+				self.moveLCD1Text.start(2000)
 			else:
-				self.instance.move(ePoint(2,self.posY)) 				 
+				self.instance.move(ePoint(2,self.posY))
  
 	def __moveLCD1TextRun(self):
 		self.moveLCD1Text.stop()
 		if self.x != self.end and self.direct == "R":
-			self.x = self.x-1       
+			self.x = self.x-1
 		elif self.x != 2 and self.direct == "L":
 			self.x = self.x+1
 		elif self.x == 2:
-			self.direct = "R"        
+			self.direct = "R"
 			self.stt =	self.stt + 1
 		elif self.x == self.end:
-			self.direct = "L"        
+			self.direct = "L"
 			self.stt =	self.stt + 1
 		self.instance.move(ePoint(self.x,self.posY))
-		if self.stt > self.rep_stt:                       
-			self.stt = 0		
+		if self.stt > self.rep_stt:
+			self.stt = 0
 			self.text = self.text[:12] + ".."
 			self.instance.move(ePoint(2,self.posY))
 		else:
-			self.moveLCD1Text.start(60)  		
+			self.moveLCD1Text.start(60)

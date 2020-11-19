@@ -5,17 +5,17 @@ from xml.etree.cElementTree import parse
 from Components.config import config
 
 MONTHS = (_("January"),
-          _("February"),
-          _("March"),
-          _("April"),
-          _("May"),
-          _("June"),
-          _("July"),
-          _("August"),
-          _("September"),
-          _("Oktober"),
-          _("November"),
-          _("December"))
+	_("February"),
+	_("March"),
+	_("April"),
+	_("May"),
+	_("June"),
+	_("July"),
+	_("August"),
+	_("September"),
+	_("Oktober"),
+	_("November"),
+	_("December"))
 
 dayOfWeek = (_("Mon"), _("Tue"), _("Wed"), _("Thu"), _("Fri"), _("Sat"), _("Sun"))
 

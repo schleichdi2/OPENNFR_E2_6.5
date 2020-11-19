@@ -60,17 +60,17 @@ class WiFiInfo2(Poll, Converter, object):
 		elif type == "wifionoff":
 			self.type = self.wifionoff
 		elif type == "linklabel":
-			self.type = self.linklabel		
+			self.type = self.linklabel
 		elif type == "levellabel":
-			self.type = self.levellabel		
+			self.type = self.levellabel
 		elif type == "noiselabel":
-			self.type = self.noiselabel			
+			self.type = self.noiselabel
 		elif type == "bitratelabel":
-			self.type = self.bitratelabel		
+			self.type = self.bitratelabel
 		elif type == "ssidlabel":
-			self.type = self.ssidlabel		
+			self.type = self.ssidlabel
 		elif type == "encryptlabel":
-			self.type = self.encryptlabel			
+			self.type = self.encryptlabel
 		self.poll_interval = 3000
 		self.poll_enabled = True
 		
@@ -91,7 +91,7 @@ class WiFiInfo2(Poll, Converter, object):
 				try:
 					wifi = "%s" % ifobj.getEssid()
 				except:
-					wifi = " "					
+					wifi = " "
 			elif self.type == self.wifilabel and (line.split()[0] == "wlan0:" or line.split()[0] == "ra0:"):
 				if line.split()[2] == "0.":
 					wifi = " "
@@ -101,32 +101,32 @@ class WiFiInfo2(Poll, Converter, object):
 				if line.split()[2] == "0.":
 					wifi = " "
 				else:
-					wifi = "Link:  "				
+					wifi = "Link:  "
 			elif self.type == self.levellabel and (line.split()[0] == "wlan0:" or line.split()[0] == "ra0:"):
 				if line.split()[2] == "0.":
 					wifi = " "
 				else:
-					wifi = "level:  "									
+					wifi = "level:  "
 			elif self.type == self.noiselabel and (line.split()[0] == "wlan0:" or line.split()[0] == "ra0:"):
 				if line.split()[2] == "0.":
 					wifi = " "
 				else:
-					wifi = "Noise:  "									
+					wifi = "Noise:  "
 			elif self.type == self.bitratelabel and (line.split()[0] == "wlan0:" or line.split()[0] == "ra0:"):
 				if line.split()[2] == "0.":
 					wifi = " "
 				else:
-					wifi = "Bitrate:  "					
+					wifi = "Bitrate:  "
 			elif self.type == self.ssidlabel and (line.split()[0] == "wlan0:" or line.split()[0] == "ra0:"):
 				if line.split()[2] == "0.":
 					wifi = " "
 				else:
-					wifi = "Ssid:  "					
+					wifi = "Ssid:  "
 			elif self.type == self.encryptlabel and (line.split()[0] == "wlan0:" or line.split()[0] == "ra0:"):
 				if line.split()[2] == "0.":
 					wifi = " "
 				else:
-					wifi = "Encrypt:  "								
+					wifi = "Encrypt:  "
 			elif self.type == self.bitrate and (line.split()[0] == "wlan0:" or line.split()[0] == "ra0:"):
 				try:
 					wifi = "%s" % ifobj.getBitrate()
@@ -135,12 +135,12 @@ class WiFiInfo2(Poll, Converter, object):
 			elif self.type == self.level and (line.split()[0] == "wlan0:" or line.split()[0] == "ra0:"):
 				if line.split()[2] == "0.":
 					wifi = " "
-				else:		
+				else:	
 				    wifi = ("%s dBm" % line.split()[3])
 			elif self.type == self.noise and (line.split()[0] == "wlan0:" or line.split()[0] == "ra0:"):
 				if line.split()[2] == "0.":
 					wifi = " "
-				else:			
+				else:	
 				    wifi = ("%s dBm" % line.split()[4])
 			elif self.type == self.encryption and (line.split()[0] == "wlan0:" or line.split()[0] == "ra0:"):
 				if line.split()[2] == "0.":

@@ -106,4 +106,3 @@ class VWatches(Renderer):
 				pass
 		self.instance.clear(self.bColor)
 
-        
