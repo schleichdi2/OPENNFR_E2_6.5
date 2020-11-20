@@ -701,7 +701,6 @@ class FindMovieListScanPath(Screen):
 		if self["folderlist"].canDescent():
 			self["folderlist"].descent()
 			self.updateFile()
-			self.close(self.updateFile)
 
 	def updateFile(self):
 		currFolder = self["folderlist"].getSelection()[0]
