@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+from __future__ import print_function, absolute_import
 from Plugins.Plugin import PluginDescriptor
 
 from Components.ActionMap import *
@@ -28,18 +28,22 @@ from enigma import eListboxPythonMultiContent, eListbox, gFont, RT_HALIGN_LEFT, 
 from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
 from Screens.VirtualKeyBoard import VirtualKeyBoard
-
-from twisted.web.client import getPage
-from twisted.web.client import downloadPage
-from twisted.web import client, error as weberror
-from twisted.internet import reactor
-from twisted.internet import defer
-from urllib.parse import urlencode
-import sys, os, re, shutil, time
-from threading import Thread
 from os import listdir as os_listdir, path as os_path
+
+from twisted.web import client, error as weberror
+from twisted.web.client import downloadPage, getPage
+from twisted.internet import defer, reactor
+
+from time import time
+
+import sys, re, os, time, shutil, requests
 from re import compile
-import re
+from six.moves.urllib.parse import quote
+from six.moves.urllib.request import urlopen, Request
+import six
+
+from urllib.parse import urlencode
+from threading import Thread
 
 try:
 	from enigma import eMediaDatabase
@@ -110,7 +114,7 @@ def cleanFile(text):
 class BackgroundCoverScanner(Thread):
 
 	def __init__(self, session):
-		assert not BackgroundCoverScanner.instance, "only one MovieDataUpdater instance is allowed!"
+		#assert not BackgroundCoverScanner.instance, "only one MovieDataUpdater instance is allowed!"
 		BackgroundCoverScanner.instance = self # set instance
 		self.session = session
 		self.scanning = False
@@ -263,7 +267,7 @@ class BackgroundCoverScanner(Thread):
 				return None
 
 	def scanForCovers(self, data):
-		self.start_time = time.clock()
+		self.start_time = time.perf_counter()
 		# filename', 'serie', filename, cleanTitle, url, season, episode
 		self.guilist = []
 		self.counting = 0
@@ -335,7 +339,7 @@ class BackgroundCoverScanner(Thread):
 	def checkDone(self):
 		print( self.counting, self.count)
 		if int(self.counting) == int(str(self.count)):
-			elapsed_time = (time.clock() - self.start_time)
+			elapsed_time = (time.perf_counter() - self.start_time)
 			if not self.background:
 				self.callback_infos("Downloaded %s Cover(s) in %.1f sec." % (str(self.found), elapsed_time))
 				self.callback_finished("Done")
@@ -351,7 +355,7 @@ class BackgroundCoverScanner(Thread):
 		if not self.background:
 			self.callback_found(self.found)
 			if int(self.counting) == int(str(self.count)):
-				elapsed_time = (time.clock() - self.start_time)
+				elapsed_time = (time.perf_counter() - self.start_time)
 				self.callback_infos("Downloaded %s Cover(s) in %.1f sec." % (str(self.found), elapsed_time))
 		self.checkDone()
 
@@ -697,6 +701,7 @@ class FindMovieListScanPath(Screen):
 		if self["folderlist"].canDescent():
 			self["folderlist"].descent()
 			self.updateFile()
+			self.close(self.updateFile)
 
 	def updateFile(self):
 		currFolder = self["folderlist"].getSelection()[0]
