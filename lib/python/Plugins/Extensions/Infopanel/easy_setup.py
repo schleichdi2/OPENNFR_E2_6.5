@@ -189,7 +189,7 @@ class EasySetup(ConfigListScreen, Screen):
 	__module__ = __name__
 	def __init__(self, session, args = 0):
 		Screen.__init__(self, session)
-		self.skinName = ["Setup"]
+		self.skinName = ["EasySetup"]
 		config.easysetup = ConfigSubsection()
 		config.easysetup.restart = ConfigBoolean(default = False)	
 		config.easysetup.backup = ConfigYesNo(default=True)	
