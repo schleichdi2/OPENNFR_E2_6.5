@@ -66,12 +66,12 @@ class HddSetup(Screen):
 		self["menu"] = List(self.disks)
 		self["key_red"] = Button(_("Mounts"))
 		self["key_green"] = Button(_("Info"))
-		self["key_yellow"] = Button(_("Initialize"))
+		#self["key_yellow"] = Button(_("Initialize"))
 		self["key_blue"] = Button(_("Exit"))
 		self["actions"] = ActionMap(["OkCancelActions", "ColorActions"],
 		{
 			"blue": self.quit,
-			"yellow": self.yellow,
+			#"yellow": self.yellow,
 			"green": self.green,
 			"red": self.red,
 			"cancel": self.quit,
