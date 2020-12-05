@@ -58,7 +58,7 @@ SystemInfo["endbutton"] = getBoxType().startswith('ixuss')
 SystemInfo["3FunctionButtons"] = getBoxType() == "et8000" or getBoxType() == "et6x00" or getBoxType() == "et10000" or getBoxType().startswith('gb')
 SystemInfo["4FunctionButtons"] = getBoxType().startswith('gb')
 SystemInfo["WakeOnLAN"] = fileCheck("/proc/stb/power/wol") or fileCheck("/proc/stb/fp/wol")
-if getBoxType() in ('gbquad', 'gbquadplus','gb800ueplus', 'gb800seplus', 'gbipbox'):
+if getBoxType() in ('gbquad', 'gbquadplus', 'gb800ueplus', 'gb800seplus', 'gbipbox'):
 	SystemInfo["WOL"] = False
 else:
 	SystemInfo["WOL"] = fileCheck("/proc/stb/power/wol") or fileCheck("/proc/stb/fp/wol")
@@ -92,30 +92,30 @@ SystemInfo["LCDMiniTV"] = fileExists("/proc/stb/lcd/mode")
 SystemInfo["LcdLiveTV"] = fileCheck("/proc/stb/fb/sd_detach")
 SystemInfo["MiniTV"] = fileCheck("/proc/stb/fb/sd_detach") or fileCheck("/proc/stb/lcd/live_enable")
 SystemInfo["FastChannelChange"] = False
-SystemInfo["LCDMiniTVPiP"] = SystemInfo["LCDMiniTV"] and getBoxType() not in ('gb800ueplus','gbquad4k','gbue4k')
+SystemInfo["LCDMiniTVPiP"] = SystemInfo["LCDMiniTV"] and getBoxType() not in ('gb800ueplus', 'gbquad4k', 'gbue4k')
 SystemInfo["LCDsymbol_circle"] = fileCheck("/proc/stb/lcd/symbol_circle")
 SystemInfo["ForceLNBPowerChanged"] = fileCheck("/proc/stb/frontend/fbc/force_lnbon")
 SystemInfo["ForceToneBurstChanged"] = fileCheck("/proc/stb/frontend/fbc/force_toneburst")
 SystemInfo["USETunersetup"] = SystemInfo["ForceLNBPowerChanged"] or SystemInfo["ForceToneBurstChanged"]
 SystemInfo["HDMIin"] = getMachineBuild() in ("inihdp", "hd2400", "et10000", "dm7080", "dm820", "dm900", "dm920", "vuultimo4k", "et13000", "sf5008", "vuuno4kse", "vuduo4k") or getBoxType() in ("spycat4k", "spycat4kcombo", "gbquad4k")
-SystemInfo["HaveRCA"] = getHaveRCA() in ('True')
-SystemInfo["HaveDVI"] = getHaveDVI() in ('True')
-SystemInfo["HaveAVJACK"] = getHaveAVJACK() in ('True')
-SystemInfo["HaveSCART"] = getHaveSCART() in ('True')
-SystemInfo["HaveSCARTYUV"] = getHaveSCARTYUV() in ('True')
-SystemInfo["HaveYUV"] = getHaveYUV() in ('True')
-SystemInfo["HaveHDMI"] = getHaveHDMI() in ('True')
+SystemInfo["HaveRCA"] = getHaveRCA() == "True"
+SystemInfo["HaveDVI"] = getHaveDVI() == "True"
+SystemInfo["HaveAVJACK"] = getHaveAVJACK() == "True"
+SystemInfo["HaveSCART"] = getHaveSCART() == "True"
+SystemInfo["HaveSCARTYUV"] = getHaveSCARTYUV() == "True")
+SystemInfo["HaveYUV"] = getHaveYUV() == "True"
+SystemInfo["HaveHDMI"] = getHaveHDMI() == "True"
 SystemInfo["MBbootdevice"] = getMBbootdevice()
 SystemInfo["canMultiBoot"] = getMultibootslots()
-SystemInfo["canMode12"] = getMachineBuild() in ('hd51','vs1500','h7') and ('brcm_cma=440M@328M brcm_cma=192M@768M', 'brcm_cma=520M@248M brcm_cma=200M@768M')
+SystemInfo["canMode12"] = getMachineBuild() in ('hd51', 'vs1500', 'h7') and ('brcm_cma=440M@328M brcm_cma=192M@768M', 'brcm_cma=520M@248M brcm_cma=200M@768M')
 SystemInfo["HAScmdline"] = fileCheck("/boot/cmdline.txt")
 SystemInfo["HasHiSi"] = pathExists("/proc/hisi")
 SystemInfo["HasMMC"] = fileHas("/proc/cmdline", "root=/dev/mmcblk") or "mmcblk" in getMachineMtdRoot()
 SystemInfo["HasSDmmc"] = SystemInfo["canMultiBoot"] and "sd" in SystemInfo["canMultiBoot"][2] and "mmcblk" in getMachineMtdRoot() 
 SystemInfo["HasSDswap"] = getMachineBuild() in ("h9", "i55plus") and pathExists("/dev/mmcblk0p1")
 SystemInfo["CanProc"] = SystemInfo["HasMMC"] and getBrandOEM() != "vuplus"
-SystemInfo["canRecovery"] = getMachineBuild() in ('hd51','vs1500','h7','8100s') and ('disk.img', 'mmcblk0p1') or getMachineBuild() in ('xc7439','osmio4k','osmio4kplus','osmini4k') and ('emmc.img', 'mmcblk1p1') or getMachineBuild() in ('gbmv200','cc1','sf8008','sf8008m','ustym4kpro','beyonwizv2','viper4k') and ('usb_update.bin','none')
-SystemInfo["VfdDisplay"] = getBoxType() not in ('anadol4k','dinobot4kl','dinobot4k','dinobot4kse', 'vuultimo', 'xpeedlx3', 'et10000', 'mutant2400', 'quadbox2400', 'atemionemesis') and fileExists("/dev/dbox/oled0")
+SystemInfo["canRecovery"] = getMachineBuild() in ('hd51', 'vs1500', 'h7', '8100s') and ('disk.img', 'mmcblk0p1') or getMachineBuild() in ('xc7439', 'osmio4k', 'osmio4kplus', 'osmini4k') and ('emmc.img', 'mmcblk1p1') or getMachineBuild() in ('gbmv200', 'cc1', 'sf8008', 'sf8008m', 'ustym4kpro', 'beyonwizv2', 'viper4k') and ('usb_update.bin', 'none')
+SystemInfo["VfdDisplay"] = getBoxType() not in ('anadol4k', 'dinobot4kl', 'dinobot4k', 'dinobot4kse', 'vuultimo', 'xpeedlx3', 'et10000', 'mutant2400', 'quadbox2400', 'atemionemesis') and fileExists("/dev/dbox/oled0")
 SystemInfo["LEDButtons"] = getBoxType() == 'vuultimo'
 SystemInfo["loadcidriver"] = getBoxType() == 'formuler1'
 SystemInfo["loadci3driver"] = getBoxType() == 'formuler3'
