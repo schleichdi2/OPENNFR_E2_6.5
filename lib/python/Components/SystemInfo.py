@@ -102,7 +102,7 @@ SystemInfo["HaveRCA"] = getHaveRCA() == "True"
 SystemInfo["HaveDVI"] = getHaveDVI() == "True"
 SystemInfo["HaveAVJACK"] = getHaveAVJACK() == "True"
 SystemInfo["HaveSCART"] = getHaveSCART() == "True"
-SystemInfo["HaveSCARTYUV"] = getHaveSCARTYUV() == "True")
+SystemInfo["HaveSCARTYUV"] = getHaveSCARTYUV() == "True"
 SystemInfo["HaveYUV"] = getHaveYUV() == "True"
 SystemInfo["HaveHDMI"] = getHaveHDMI() == "True"
 SystemInfo["MBbootdevice"] = getMBbootdevice()
