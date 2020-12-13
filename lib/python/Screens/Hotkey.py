@@ -298,7 +298,7 @@ class HotkeySetup(Screen):
 		self.longkeyPressed = False
 		self.onLayoutFinish.append(self.__layoutFinished)
 		self.onExecBegin.append(self.getFunctions)
-		self.onShown.append(self.disableKeyMap)
+		#self.onShown.append(self.disableKeyMap)
 		self.onClose.append(self.enableKeyMap)
 
 	def __layoutFinished(self):
@@ -380,7 +380,7 @@ class HotkeySetupSelect(Screen):
 			"moveDown": self.moveDown,
 		}, -1)
 		self.onShown.append(self.enableKeyMap)
-		self.onClose.append(self.disableKeyMap)
+		#self.onClose.append(self.disableKeyMap)
 		self.onLayoutFinish.append(self.__layoutFinished)
 
 	def __layoutFinished(self):
