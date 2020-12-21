@@ -121,7 +121,7 @@ class BootlogoSetupScreen(Screen):
 		if (getDesktop(0).size().width() == 1920):
 			self["Mlist"] = PanelList([], font0=36, font1=28, itemHeight=92)
 		else:
-			self["Mlist"] = PanelList([])
+		        self["Mlist"] = PanelList([])
 		self["Mlist"].l.setList(self.Mlist)
 		self["Mlist"].onSelectionChanged.append(self.selectionChanged) 	
 

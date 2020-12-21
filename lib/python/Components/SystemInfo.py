@@ -101,10 +101,10 @@ SystemInfo["HDMIin"] = getMachineBuild() in ("inihdp", "hd2400", "et10000", "dm7
 SystemInfo["HaveRCA"] = getHaveRCA() == "True"
 SystemInfo["HaveDVI"] = getHaveDVI() == "True"
 SystemInfo["HaveAVJACK"] = getHaveAVJACK() == "True"
-SystemInfo["HaveSCART"] = getHaveSCART() == "True"
-SystemInfo["HaveSCARTYUV"] = getHaveSCARTYUV() == "True"
-SystemInfo["HaveYUV"] = getHaveYUV() == "True"
-SystemInfo["HaveHDMI"] = getHaveHDMI() == "True"
+SystemInfo["HAVESCART"] = getHaveSCART() == "True"
+SystemInfo["HAVESCARTYUV"] = getHaveSCARTYUV() == "True"
+SystemInfo["HAVEYUV"] = getHaveYUV() == "True"
+SystemInfo["HAVEHDMI"] = getHaveHDMI() == "True"
 SystemInfo["MBbootdevice"] = getMBbootdevice()
 SystemInfo["canMultiBoot"] = getMultibootslots()
 SystemInfo["canMode12"] = getMachineBuild() in ('hd51', 'vs1500', 'h7') and ('brcm_cma=440M@328M brcm_cma=192M@768M', 'brcm_cma=520M@248M brcm_cma=200M@768M')
