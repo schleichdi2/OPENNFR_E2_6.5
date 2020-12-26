@@ -1044,5 +1044,3 @@ class QuickMenuDevices(Screen):
 			png = LoadPixmap(mypixmap)
 			res = (name, des, png)
 			self.devicelist.append(res)
-
-

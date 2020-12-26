@@ -801,7 +801,6 @@ profile("TimeZones")
 import Components.Timezones
 Components.Timezones.InitTimeZones()
 
-
 profile("Init:DebugLogCheck")
 import Screens.LogManager
 Screens.LogManager.AutoLogManager()

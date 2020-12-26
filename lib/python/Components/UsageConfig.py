@@ -108,6 +108,11 @@ def InitUsageConfig():
 	config.usage.volume_step_fast = ConfigSelectionNumber(default = 3, stepwidth = 1, min = 1, max = 10, wraparound = False)
 
 	choicelist = []
+	for i in list(range(10, 310, 10)):
+		choicelist.append(("%d" % i, "%d " % i  + _("seconds")))
+	config.usage.shutdown_msgbox_timeout = ConfigSelection(default = "180", choices = choicelist)	
+	
+	choicelist = []
 	for i in list(range(1, 11)):
 		choicelist.append(("%d" % i, ngettext("%d second", "%d seconds", i) % i))
 	config.usage.infobar_timeout = ConfigSelection(default = "5", choices = [("0", _("No timeout"))] + choicelist)
@@ -137,7 +142,7 @@ def InitUsageConfig():
 	config.usage.menu_sort_mode = ConfigSelection(default = "default", choices = [
 		("a_z", _("alphabetical")),
 		("default", _("Default")),
-		("user", _("user defined")),])
+		("user", _("user defined")),])	
 	config.usage.enable_tt_caching = ConfigYesNo(default = True)
 	
 	config.usage.tuxtxt_font_and_res = ConfigSelection(default = "TTF_SD", choices = [("X11_SD", _("Fixed X11 font (SD)")), ("TTF_SD", _("TrueType font (SD)")), ("TTF_HD", _("TrueType font (HD)")), ("TTF_FHD", _("TrueType font (full-HD)")), ("expert_mode", _("Expert mode"))])
@@ -299,12 +304,12 @@ def InitUsageConfig():
 			choicelist.append(("%d" % i, _("Shutdown in ") + m))
 		elif i > 0:
 			choicelist.append(("%d" % i, _("Standby in ") + m))
-
+                        	
 	config.usage.inactivity_timer = ConfigSelection(default = "0", choices = choicelist)
 	config.usage.inactivity_timer_blocktime = ConfigYesNo(default = True)
 	config.usage.inactivity_timer_blocktime_begin = ConfigClock(default = mktime((1970, 0, 0, 6, 0, 0, 0, 0, 0)))
-	config.usage.inactivity_timer_blocktime_end = ConfigClock(default = mktime((1970, 0, 0, 23, 0, 0, 0, 0, 0)))
-
+	config.usage.inactivity_timer_blocktime_end = ConfigClock(default = mktime((1970, 0, 0, 23, 0, 0, 0, 0, 0)))		
+		
 	choicelist = []
 	for i in range(-7200, 7201, 900):
 		m = abs(i / 60)
@@ -319,7 +324,7 @@ def InitUsageConfig():
 			choicelist.append(("event_standby", _("Standby after current event")))
 	config.usage.sleep_timer = ConfigSelection(default = "0", choices = choicelist)
 	
-	choicelist = [("show_menu", _("Show shutdown menu")), ("shutdown", _("Immediate shutdown")), ("standby", _("Standby")), ("sleeptimer", _("SleepTimer"))]
+	choicelist = [("show_menu", _("Show shutdown menu")), ("shutdown", _("Immediate shutdown")), ("standby", _("Standby")), ("sleeptimer", _("SleepTimer"))]	
 
 	config.usage.on_long_powerpress = ConfigSelection(default = "show_menu", choices = choicelist)
 	config.usage.on_short_powerpress = ConfigSelection(default = "standby", choices = choicelist)
@@ -344,7 +349,8 @@ def InitUsageConfig():
 		m = ngettext("%d minute", "%d minutes", m) % m
 		choicelist.append(("%d" % i, _("Shutdown in ") + m))
 	config.usage.standby_to_shutdown_timer = ConfigSelection(default = "0", choices = choicelist)
-
+	
+     
 	choicelist = [("0", "Disabled")]
 	for i in (5, 30, 60, 300, 600, 900, 1200, 1800, 2700, 3600):
 		if i < 60:
@@ -392,7 +398,7 @@ def InitUsageConfig():
 	config.usage.recording_frontend_priority             = ConfigSelection(default = "-2", choices = rec_nims)
 	config.usage.recording_frontend_priority_multiselect = ConfigSelection(default = "-2", choices = rec_nims_multi)
 	config.usage.recording_frontend_priority_strictly    = ConfigSelection(default = "no", choices = priority_strictly_choices)
-	config.usage.recording_frontend_priority_intval      = NoSave(ConfigInteger(default = 0, limits = (-99, maxsize)))
+	config.usage.recording_frontend_priority_intval      = NoSave(ConfigInteger(default = 0, limits = (-99, maxsize)))	
 	config.usage.recording_timer_start = ConfigYesNo(default = False)
 	config.misc.disable_background_scan = ConfigYesNo(default = False)
 
@@ -533,6 +539,8 @@ def InitUsageConfig():
 	config.lcd.modepip = ConfigSelection(default = "0", choices = [
 		("0", _("off")),
 		("1", _("on"))])
+		
+			
 
 	def SpinnerOnOffChanged(configElement):
 		setSpinnerOnOff(int(configElement.value))
@@ -562,7 +570,7 @@ def InitUsageConfig():
 		setPreferredTuner(int(config.usage.frontend_priority_intval.value))
 	config.usage.frontend_priority.addNotifier(PreferredTunerChanged)
 	config.usage.frontend_priority_multiselect.addNotifier(PreferredTunerChanged)
-	config.usage.frontend_priority_strictly.addNotifier(PreferredTunerChanged)
+	config.usage.frontend_priority_strictly.addNotifier(PreferredTunerChanged)	
 
 	config.usage.hide_zap_errors = ConfigYesNo(default = True)
 	config.misc.use_ci_assignment = ConfigYesNo(default = True)
@@ -1309,7 +1317,7 @@ def InitUsageConfig():
  					("0", _("as plugin in extended bar")),
  					("1", _("with long OK press")),
  					("2", _("with exit button")),
- 					("3", _("with left/right buttons"))])
+ 					("3", _("with left/right buttons"))])					
 	if fileExists("/usr/lib/enigma2/python/Plugins/Extensions/CoolTVGuide/plugin.py"):
 		config.plisettings.PLIEPG_mode = ConfigSelection(default="cooltvguide", choices = [
 					("pliepg", _("Show Graphical EPG")),
@@ -1437,9 +1445,9 @@ def InitUsageConfig():
 	config.oscaminfo.intervall = ConfigSelectionNumber(min = 1, max = 600, stepwidth = 1, default = 10, wraparound = True)
 	SystemInfo["OScamInstalled"] = False
 	if getBoxType() in ('gbquad4k', 'gbue4k', 'gbquadplus', 'gb800ueplus', 'gb800seplus', 'gbultraue', 'gb7362', 'twinboxlcd', '7210s', 'vusolo4k', 'vuultimo4k', 'e4hd', 'e4hdultra', 'singleboxlcd', 'sf208', 'sf228'):
-		SystemInfo["ClockDisplay"] = True
+	        SystemInfo["ClockDisplay"] = True
 	else:
-		SystemInfo["ClockDisplay"] = False 
+	        SystemInfo["ClockDisplay"] = False 
 	config.cccaminfo = ConfigSubsection()
 	config.cccaminfo.showInExtensions = ConfigYesNo(default=False)
 	config.cccaminfo.serverNameLength = ConfigSelectionNumber(min = 10, max = 100, stepwidth = 1, default = 22, wraparound = True)
