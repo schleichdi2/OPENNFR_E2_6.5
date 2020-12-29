@@ -183,6 +183,7 @@ class BackgroundCoverScanner(Thread):
 							filename = re.sub(fileExtensionsRemove + "$", '.jpg', filename_org)
 						if not fileExists(filename):
 							if os.path.isdir(filename_org):
+								url = six.ensure_binary(url)
 								url = 'http://api.themoviedb.org/3/search/movie?api_key=8789cfd3fbab7dccf1269c3d7d867aff&query=%s&language=de' % file.replace(' ','%20')
 								data.append(('dir', 'movie', filename, file, url, None, None))
 							else:
@@ -198,9 +199,11 @@ class BackgroundCoverScanner(Thread):
 									if seasonEpisode:
 										(season, episode) = seasonEpisode[0]
 									name2 = re.sub('[Ss][0-9]+[Ee][0-9]+.*[a-zA-Z0-9_]+','', cleanTitle, flags=re.S|re.I)
+									url = six.ensure_binary(url)
 									url = 'http://thetvdb.com/api/GetSeries.php?seriesname=%s&language=de' % name2.replace(' ','%20')
 									data.append(('file', 'serie', filename, name2, url, season, episode))
 								else:
+									url = six.ensure_binary(url)
 									url = 'http://api.themoviedb.org/3/search/movie?api_key=8789cfd3fbab7dccf1269c3d7d867aff&query=%s&language=de' % cleanTitle.replace(' ','%20')
 									data.append(('file', 'movie', filename, cleanTitle, url, None, None))
 
@@ -221,14 +224,18 @@ class BackgroundCoverScanner(Thread):
 										cleanTitle = re.sub('[Ss][0-9]+[Ee][0-9]+.*[a-zA-Z0-9_]+','', metaName, flags=re.S|re.I)
 										cleanTitle = cleanFile(cleanTitle)
 										print( "cleanTitle:", cleanTitle)
+										url = six.ensure_binary(url)
 										url = 'http://thetvdb.com/api/GetSeries.php?seriesname=%s&language=de' % cleanTitle.replace(' ','%20')
+										data = six.ensure_str(data)
 										data.append(('file', 'serie', filename, cleanTitle, url, None, None))
 									#else:
 									#	url = 'http://thetvdb.com/api/GetSeries.php?seriesname=%s&language=de' % cleanTitle.replace(' ','%20')
 									#	data.append(('file', 'serie', filename, cleanTitle, url, None, None))
 									else:
 									#if metaName is not None:
+
 										url = 'http://api.themoviedb.org/3/search/movie?api_key=8789cfd3fbab7dccf1269c3d7d867aff&query=%s&language=de' % metaName.replace(' ','%20')
+										url = six.ensure_binary(url)
 										data.append(('file', 'movie', filename, metaName, url, None, None))
 									#else:
 									#	url = 'http://api.themoviedb.org/3/search/movie?api_key=8789cfd3fbab7dccf1269c3d7d867aff&query=%s&language=de' % cleanTitle.replace(' ','%20')
@@ -279,62 +286,81 @@ class BackgroundCoverScanner(Thread):
 		finished = defer.DeferredList(downloads).addErrback(self.dataErrorInfo)
 
 	def download(self, url):
+		url = six.ensure_binary(url)
 		return getPage(url, timeout=20, headers={'Accept': 'application/json'})
 
-	def parseWebpage(self, data, which, type, filename, title, url, season, episode):
+	def parseWebpage(self, data, type, title, url, cover_path, season, episode):
+		data = six.ensure_str(data)
 		self.counting += 1
-		if not self.background:
-			self.callback_infos("Cover(s): %s / %s - Scan: %s" % (str(self.counting), str(self.count), title))
+		self.start_time = time.clock()
 		if type == "movie":
 			list = []
-			try:
-				list = re.search('poster_path":"(.+?)".*?"original_title":"(.+?)"', str(data), re.S).groups(1)
-			except:
-				list = re.search('original_title":"(.+?)".*?"poster_path":"(.+?)"', str(data), re.S).groups(1)
+			list = re.findall('"poster_path":"\\\(.*?)".*?"original_title":"(.*?)"', data, re.S)
 			if list:
-				self.guilist.append(((title, True, filename),))
-				purl = "http://image.tmdb.org/t/p/%s%s" % (str(config.movielist.cover.themoviedb_coversize.value), str(list[0].replace('\\','')))
-				downloadPage(purl, filename).addCallback(self.countFound).addErrback(self.dataErrorDownload)
-			else:
-				self.guilist.append(((title, False, filename),))
-				self.notfound += 1
-				if not self.background:
-					self.callback_notfound(self.notfound)
+				purl = "http://image.tmdb.org/t/p/%s%s" % (config.EMC.imdb.preferred_coversize.value, list[0][0])
+				purl = six.ensure_binary(purl)
+				self.counter_download += 1
+				self.end_time = time.clock()
+				elapsed = (self.end_time - self.start_time) * 1000
+				self.menulist.append(self.imdb_show(title, cover_path, '%.1f' %elapsed, "", title))
+				if not fileExists(cover_path):
+					downloadPage(purl, cover_path).addErrback(self.dataError)
 
-			# get description
-			if config.movielist.cover.getdescription.value:
-				idx = []
-				idx = re.findall('"id":(.*?),', data, re.S)
-				if idx:
-					iurl = "http://api.themoviedb.org/3/movie/%s?api_key=8789cfd3fbab7dccf1269c3d7d867aff&language=de" % idx[0]
-					getPage(iurl, headers={'Content-Type':'application/x-www-form-urlencoded'}).addCallback(self.getInfos, id, type, filename).addErrback(self.dataError)
+				# get description
+				if config.EMC.imdb.savetotxtfile.value:
+					idx = []
+					idx = re.findall('"id":(.*?),', data, re.S)
+					if idx:
+						iurl = "http://api.themoviedb.org/3/movie/%s?api_key=8789cfd3fbab7dccf1269c3d7d867aff&language=de" % idx[0]
+						iurl = six.ensure_binary(iurl)
+						getPage(iurl, headers={'Content-Type':'application/x-www-form-urlencoded'}).addCallback(self.getInfos, id, type, cover_path).addErrback(self.dataError)
+			else:
+				self.counter_no_poster += 1
+				self.menulist.append(self.imdb_show(title, cover_path, _("N/A"), "", title))
 
 		elif type == "serie":
 			list = []
 			list = re.findall('<seriesid>(.*?)</seriesid>', data, re.S)
 			if list:
-				self.guilist.append(((title, True, filename),))
-				purl = "http://www.thetvdb.com/banners/_cache/posters/%s-1.jpg" % list[0]
-				downloadPage(purl, filename).addCallback(self.countFound).addErrback(self.dataErrorDownload)
+				x = config.EMC.imdb.thetvdb_standardcover.value
+				purl = "https://www.thetvdb.com/banners/_cache/posters/%s-%s.jpg" % (list[0], x)
+				if x > 1 and not urlExist(purl):
+					x = 1
+					purl = "https://www.thetvdb.com/banners/_cache/posters/%s-%s.jpg" % (list[0], x)
+				self.counter_download += 1
+				self.end_time = time.clock()
+				elapsed = (self.end_time - self.start_time) * 1000
+				self.menulist.append(self.imdb_show(title, cover_path, '%.1f' %elapsed, "", title))
+				if not fileExists(cover_path):
+					downloadPage(purl, cover_path).addErrback(self.dataError)
+
+				# get description
+				if config.EMC.imdb.savetotxtfile.value:
+					if season and episode:
+						iurl = "https://www.thetvdb.com/api/2AAF0562E31BCEEC/series/%s/default/%s/%s/de.xml" % (list[0], str(int(season)), str(int(episode)))
+						iurl = six.ensure_binary(iurl)
+						getPage(iurl, headers={'Content-Type':'application/x-www-form-urlencoded'}).addCallback(self.getInfos, id, type, cover_path).addErrback(self.dataError)
 			else:
-				self.notfound += 1
-				self.guilist.append(((title, False, filename),))
-				if not self.background:
-					self.callback_notfound(self.notfound)
+				self.counter_no_poster += 1
+				self.menulist.append(self.imdb_show(title, cover_path, _("N/A"), "", title))
 
-			# get description
-			if config.movielist.cover.getdescription.value:
-				if season and episode:
-					iurl = "http://www.thetvdb.com/api/2AAF0562E31BCEEC/series/%s/default/%s/%s/de.xml" % (list[0], str(int(season)), str(int(episode)))
-					getPage(iurl, headers={'Content-Type':'application/x-www-form-urlencoded'}).addCallback(self.getInfos, id, type, filename).addErrback(self.dataError)
-		else:
-			self.notfound += 1
-			if not self.background:
-				self.callback_notfound(self.notfound)
+		self.count = ("%s: %s " + _("from") + " %s") % (self.showSearchSiteName, self.counting, self.count_total)
+		self["info"].setText(self.count)
+		self["no_poster"].setText(_("No Cover: %s") % str(self.counter_no_poster))
+		self["exist"].setText(_("Exist: %s") % str(self.counter_exist))
+		self["download"].setText(_("Download: %s") % str(self.counter_download))
+		self["menulist"].l.setList(self.menulist)
+		self["menulist"].l.setItemHeight(self.itemHeight)
+		self.check = True
 
-		if not self.background:
-			self.callback_menulist(self.guilist)
-		self.checkDone()
+		if self.counting == self.count_total:
+			self.e_supertime = time.time()
+			total_time = self.e_supertime - self.s_supertime
+			avg = (total_time / self.count_total)
+			self.done = ("%s " + _("movies in") + " %.1f " + _("sec found. Avg. Speed:") + " %.1f " + _("sec.")) % (self.count_total, total_time, avg)
+			self["done_msg"].setText(self.done)
+			self.running = False
+			self.showInfo()
 
 	def checkDone(self):
 		print( self.counting, self.count)
@@ -351,6 +377,7 @@ class BackgroundCoverScanner(Thread):
 			self.callback_finished(self.count)
 
 	def countFound(self, data):
+		data = six.ensure_str(data)
 		self.found += 1
 		if not self.background:
 			self.callback_found(self.found)
@@ -360,6 +387,7 @@ class BackgroundCoverScanner(Thread):
 		self.checkDone()
 
 	def getInfos(self, data, id, type, filename):
+		data = six.ensure_str(data)
 		if type == "movie":
 			infos = re.findall('"genres":\[(.*?)\].*?"overview":"(.*?)"', data, re.S)
 			if infos:
@@ -385,7 +413,7 @@ class BackgroundCoverScanner(Thread):
 	def dataErrorInfo(self, error):
 		self.error += 1
 		self.counting += 1
-		print( "ERROR dataErrorInfo:", error)
+		#print( "ERROR dataErrorInfo:", error)
 		if not self.background:
 			self.callback_error(self.error)
 		self.checkDone()
@@ -679,7 +707,7 @@ class FindMovieListScanPath(Screen):
 			self.fullpath = self["folderlist"].getSelection()[0]
 		else:
 			self.fullpath = self["folderlist"].getSelection()[0] + "/"
-			self.close(self.fullpath)
+		self.close(self.fullpath)
 
 	def up(self):
 		self["folderlist"].up()
