@@ -45,22 +45,12 @@ import six
 from urllib.parse import urlencode
 from threading import Thread
 
-try:
-	from enigma import eMediaDatabase
-	isDreamOS = True
-except:
+def urlExist(url):
 	try:
-		file = open("/proc/stb/info/model", "r")
-		dev = file.readline().strip()
-		file.close()
-		if dev == "dm7080":
-			isDreamOS = True
-		elif dev == "dm820":
-			isDreamOS = True
-		else:
-			isDreamOS = False
+		urlopen(Request(url))
+		return True
 	except:
-			isDreamOS = False
+		return False
 
 def getCoverPath():
 	blockList = ['hdd','cf','usb','sdcard']
@@ -86,7 +76,7 @@ def getCoverPath():
 	return coverPaths
 
 pname = "Find MovieList Covers"
-pversion = "0.5 OpenNfr-mod"
+pversion = "1.0 OpenNfr-mod"
 
 config.movielist.cover = ConfigSubsection()
 config.movielist.cover.themoviedb_coversize = ConfigSelection(default="w185", choices = ["w92", "w185", "w500", "original"])
@@ -104,7 +94,7 @@ def cleanFile(text):
 	cutlist = ['x264','720p','1080p','1080i','PAL','GERMAN','ENGLiSH','WS','DVDRiP','UNRATED','RETAIL','Web-DL','DL','LD','MiC','MD','DVDR','BDRiP','BLURAY','DTS','UNCUT','ANiME',
 				'AC3MD','AC3','AC3D','TS','DVDSCR','COMPLETE','INTERNAL','DTSD','XViD','DIVX','DUBBED','LINE.DUBBED','DD51','DVDR9','DVDR5','h264','AVC',
 				'WEBHDTVRiP','WEBHDRiP','WEBRiP','WEBHDTV','WebHD','HDTVRiP','HDRiP','HDTV','ITUNESHD','REPACK','SYNC']
-	#text = text.replace('.wmv','').replace('.flv','').replace('.ts','').replace('.m2ts','').replace('.mkv','').replace('.avi','').replace('.mpeg','').replace('.mpg','').replace('.iso','').replace('.mp4','').replace('.jpg','').replace('.txt','')
+
 	text = re.sub(fileExtensionsRemove + "$", '', text)
 	for word in cutlist:
 		text = re.sub('(\_|\-|\.|\+|\s)'+word+'(\_|\-|\.|\+|\s)','+', text, flags=re.I)
@@ -114,8 +104,7 @@ def cleanFile(text):
 class BackgroundCoverScanner(Thread):
 
 	def __init__(self, session):
-		#assert not BackgroundCoverScanner.instance, "only one MovieDataUpdater instance is allowed!"
-		BackgroundCoverScanner.instance = self # set instance
+		BackgroundCoverScanner.instance = self
 		self.session = session
 		self.scanning = False
 		self.bgTimerRunning = False
@@ -141,7 +130,6 @@ class BackgroundCoverScanner(Thread):
 				print( "----------------------- S t o p - T i m e r -------------------------")
 
 	def setCallbacks(self, callback_infos, callback_found, callback_notfound, callback_error, callback_menulist, callback_finished):
-		# self.msgCallback, self.foundCallback, self.notFoundCallback, self.errorCallback, self.listCallback, self.msgDone
 		self.callback_infos = callback_infos
 		self.callback_found = callback_found
 		self.callback_notfound = callback_notfound
@@ -187,10 +175,7 @@ class BackgroundCoverScanner(Thread):
 								url = 'http://api.themoviedb.org/3/search/movie?api_key=8789cfd3fbab7dccf1269c3d7d867aff&query=%s&language=de' % file.replace(' ','%20')
 								data.append(('dir', 'movie', filename, file, url, None, None))
 							else:
-								#cleanTitle = re.sub('\W.*?([0-9][0-9][0-9][0-9])', '', file)
-								# Remove Year
 								cleanTitle = re.sub('([0-9][0-9][0-9][0-9])', '', file)
-								# Remove fileExtensions
 								cleanTitle = cleanFile(cleanTitle)
 								if re.search('[Ss][0-9]+[Ee][0-9]+', file) is not None:
 									season = None
@@ -209,8 +194,6 @@ class BackgroundCoverScanner(Thread):
 
 					elif file.endswith('.ts'):
 						metaName = None
-						#cleanTitle = re.sub('^.*? - .*? - ', '', file)
-						#cleanTitle = re.sub('[.]ts', '', cleanTitle)
 						if fileExists(filename_org+".meta"):
 							metaName = open(filename_org+".meta",'r').readlines()[1].rstrip("\n").rstrip("\t").rstrip("\r")
 							if config.movielist.cover.savestyle.value == "opennfr":
@@ -220,7 +203,6 @@ class BackgroundCoverScanner(Thread):
 							if not fileExists(filename):
 								if metaName is not None:
 									if re.search('[Ss][0-9]+[Ee][0-9]+', metaName) is not None:
-									#if metaName is not None:
 										cleanTitle = re.sub('[Ss][0-9]+[Ee][0-9]+.*[a-zA-Z0-9_]+','', metaName, flags=re.S|re.I)
 										cleanTitle = cleanFile(cleanTitle)
 										print( "cleanTitle:", cleanTitle)
@@ -228,18 +210,10 @@ class BackgroundCoverScanner(Thread):
 										url = 'http://thetvdb.com/api/GetSeries.php?seriesname=%s&language=de' % cleanTitle.replace(' ','%20')
 										data = six.ensure_str(data)
 										data.append(('file', 'serie', filename, cleanTitle, url, None, None))
-									#else:
-									#	url = 'http://thetvdb.com/api/GetSeries.php?seriesname=%s&language=de' % cleanTitle.replace(' ','%20')
-									#	data.append(('file', 'serie', filename, cleanTitle, url, None, None))
 									else:
-									#if metaName is not None:
-
 										url = 'http://api.themoviedb.org/3/search/movie?api_key=8789cfd3fbab7dccf1269c3d7d867aff&query=%s&language=de' % metaName.replace(' ','%20')
 										url = six.ensure_binary(url)
 										data.append(('file', 'movie', filename, metaName, url, None, None))
-									#else:
-									#	url = 'http://api.themoviedb.org/3/search/movie?api_key=8789cfd3fbab7dccf1269c3d7d867aff&query=%s&language=de' % cleanTitle.replace(' ','%20')
-									#	data.append(('file', 'serie', filename, cleanTitle, url, None, None))
 
 			self.count = len(data)
 			if not self.background:
@@ -275,15 +249,14 @@ class BackgroundCoverScanner(Thread):
 
 	def scanForCovers(self, data):
 		self.start_time = time.perf_counter()
-		# filename', 'serie', filename, cleanTitle, url, season, episode
 		self.guilist = []
 		self.counting = 0
 		self.found = 0
 		self.notfound = 0
 		self.error = 0
 		ds = defer.DeferredSemaphore(tokens=2)
-		downloads = [ds.run(self.download, url).addCallback(self.parseWebpage, which, type, filename, title, url, season, episode).addErrback(self.dataErrorInfo) for which, type, filename, title, url, season, episode in data]
-		finished = defer.DeferredList(downloads).addErrback(self.dataErrorInfo)
+		downloads = [ds.run(self.download, url).addCallback(self.parseWebpage, which, type, filename, title, url, season, episode) for which, type, filename, title, url, season, episode in data]
+		finished = defer.DeferredList(downloads)
 
 	def download(self, url):
 		url = six.ensure_binary(url)
@@ -297,23 +270,23 @@ class BackgroundCoverScanner(Thread):
 			list = []
 			list = re.findall('"poster_path":"\\\(.*?)".*?"original_title":"(.*?)"', data, re.S)
 			if list:
-				purl = "http://image.tmdb.org/t/p/%s%s" % (config.EMC.imdb.preferred_coversize.value, list[0][0])
+				purl = "http://image.tmdb.org/t/p/%s%s" % (config.movielist.imdb.preferred_coversize.value, list[0][0])
 				purl = six.ensure_binary(purl)
 				self.counter_download += 1
 				self.end_time = time.clock()
 				elapsed = (self.end_time - self.start_time) * 1000
 				self.menulist.append(self.imdb_show(title, cover_path, '%.1f' %elapsed, "", title))
 				if not fileExists(cover_path):
-					downloadPage(purl, cover_path).addErrback(self.dataError)
+					downloadPage(purl, cover_path)
 
-				# get description
-				if config.EMC.imdb.savetotxtfile.value:
+
+				if config.movielist.imdb.savetotxtfile.value:
 					idx = []
 					idx = re.findall('"id":(.*?),', data, re.S)
 					if idx:
 						iurl = "http://api.themoviedb.org/3/movie/%s?api_key=8789cfd3fbab7dccf1269c3d7d867aff&language=de" % idx[0]
 						iurl = six.ensure_binary(iurl)
-						getPage(iurl, headers={'Content-Type':'application/x-www-form-urlencoded'}).addCallback(self.getInfos, id, type, cover_path).addErrback(self.dataError)
+						getPage(iurl, headers={'Content-Type':'application/x-www-form-urlencoded'}).addCallback(self.getInfos, id, type, cover_path)
 			else:
 				self.counter_no_poster += 1
 				self.menulist.append(self.imdb_show(title, cover_path, _("N/A"), "", title))
@@ -322,7 +295,7 @@ class BackgroundCoverScanner(Thread):
 			list = []
 			list = re.findall('<seriesid>(.*?)</seriesid>', data, re.S)
 			if list:
-				x = config.EMC.imdb.thetvdb_standardcover.value
+				x = config.movielist.imdb.thetvdb_standardcover.value
 				purl = "https://www.thetvdb.com/banners/_cache/posters/%s-%s.jpg" % (list[0], x)
 				if x > 1 and not urlExist(purl):
 					x = 1
@@ -332,14 +305,12 @@ class BackgroundCoverScanner(Thread):
 				elapsed = (self.end_time - self.start_time) * 1000
 				self.menulist.append(self.imdb_show(title, cover_path, '%.1f' %elapsed, "", title))
 				if not fileExists(cover_path):
-					downloadPage(purl, cover_path).addErrback(self.dataError)
-
-				# get description
-				if config.EMC.imdb.savetotxtfile.value:
+					downloadPage(purl, cover_path)
+				if config.movielist.imdb.savetotxtfile.value:
 					if season and episode:
 						iurl = "https://www.thetvdb.com/api/2AAF0562E31BCEEC/series/%s/default/%s/%s/de.xml" % (list[0], str(int(season)), str(int(episode)))
 						iurl = six.ensure_binary(iurl)
-						getPage(iurl, headers={'Content-Type':'application/x-www-form-urlencoded'}).addCallback(self.getInfos, id, type, cover_path).addErrback(self.dataError)
+						getPage(iurl, headers={'Content-Type':'application/x-www-form-urlencoded'}).addCallback(self.getInfos, id, type, cover_path)
 			else:
 				self.counter_no_poster += 1
 				self.menulist.append(self.imdb_show(title, cover_path, _("N/A"), "", title))
@@ -392,13 +363,13 @@ class BackgroundCoverScanner(Thread):
 			infos = re.findall('"genres":\[(.*?)\].*?"overview":"(.*?)"', data, re.S)
 			if infos:
 				(genres, desc) = infos[0]
-				self.writeTofile(decodeHtml(desc), filename)
+				self.writeTofile(self.decodeHtml(desc), filename)
 
 		elif type == "serie":
 			infos = re.findall('<Overview>(.*?)</Overview>', data, re.S)
 			if infos:
 				desc = infos[0]
-				self.writeTofile(decodeHtml(desc), filename)
+				self.writeTofile(self.decodeHtml(desc), filename)
 
 	def writeTofile(self, text, filename):
 		if not fileExists(filename.replace('.jpg','.txt')):
@@ -410,21 +381,9 @@ class BackgroundCoverScanner(Thread):
 		print( "ERROR:", error)
 		self.checkDone()
 
-	def dataErrorInfo(self, error):
-		self.error += 1
-		self.counting += 1
-		#print( "ERROR dataErrorInfo:", error)
-		if not self.background:
-			self.callback_error(self.error)
-		self.checkDone()
-
-	def dataErrorDownload(self, error):
-		self.error += 1
-		self.counting += 1
-		if not self.background:
-			self.callback_error(self.error)
-		print( "ERROR:", error)
-		self.checkDone()
+	def dataError2(self, error):
+		self.counting = int(self.counting) + 1
+		print("ERROR:", error)
 
 class fmlcMenuList(GUIComponent, object):
 	GUI_WIDGET = eListbox
@@ -531,7 +490,6 @@ class FindMovieList(Screen):
 			"ok"	:	self.keyOk
 		}, -1)
 
-		#self['title'] 
 		self.title = "%s v%s" % (pname, pversion)
 		self['info'] = Label("")
 		self['path'] = Label("Scan Path: %s" % config.movielist.cover.scanpath.value)
@@ -734,97 +692,107 @@ class FindMovieListScanPath(Screen):
 		currFolder = self["folderlist"].getSelection()[0]
 		self["media"].setText(currFolder)
 
-	def decodeHtml(text):
-		text = text.replace('&auml;','ÃƒÂ¤')
-		text = text.replace('\u00e4','ÃƒÂ¤')
-		text = text.replace('&#228;','ÃƒÂ¤')
-		text = text.replace('&Auml;','Ãƒâ€ž')
-		text = text.replace('\u00c4','Ãƒâ€ž')
-		text = text.replace('&#196;','Ãƒâ€ž')
-		text = text.replace('&ouml;','ÃƒÂ¶')
-		text = text.replace('\u00f6','ÃƒÂ¶')
-		text = text.replace('&#246;','ÃƒÂ¶')
-		text = text.replace('&ouml;','Ãƒâ€“')
-		text = text.replace('&Ouml;','Ãƒâ€“')
-		text = text.replace('\u00d6','Ãƒâ€“')
-		text = text.replace('&#214;','Ãƒâ€“')
-		text = text.replace('&uuml;','ÃƒÂ¼')
-		text = text.replace('\u00fc','ÃƒÂ¼')
-		text = text.replace('&#252;','ÃƒÂ¼')
-		text = text.replace('&Uuml;','ÃƒÅ“')
-		text = text.replace('\u00dc','ÃƒÅ“')
-		text = text.replace('&#220;','ÃƒÅ“')
-		text = text.replace('&szlig;','ÃƒÅ¸')
-		text = text.replace('\u00df','ÃƒÅ¸')
-		text = text.replace('&#223;','ÃƒÅ¸')
-		text = text.replace('&amp;','&')
-		text = text.replace('&quot;','\"')
-		text = text.replace('&gt;','>')
-		text = text.replace('&apos;',"'")
-		text = text.replace('&acute;','\'')
-		text = text.replace('&ndash;','-')
-		text = text.replace('&bdquo;','"')
-		text = text.replace('&rdquo;','"')
-		text = text.replace('&ldquo;','"')
-		text = text.replace('&lsquo;','\'')
-		text = text.replace('&rsquo;','\'')
-		text = text.replace('&#034;','"')
-		text = text.replace('&#34;','"')
-		text = text.replace('&#038;','&')
-		text = text.replace('&#039;','\'')
-		text = text.replace('&#39;','\'')
-		text = text.replace('&#160;',' ')
-		text = text.replace('\u00a0',' ')
-		text = text.replace('\u00b4','\'')
-		text = text.replace('\u003d','=')
-		text = text.replace('\u0026','&')
-		text = text.replace('&#174;','')
-		text = text.replace('&#225;','a')
-		text = text.replace('&#233;','e')
-		text = text.replace('&#243;','o')
-		text = text.replace('&#8211;',"-")
-		text = text.replace('&#8212;',"Ã¢â‚¬â€")
-		text = text.replace('&mdash;','Ã¢â‚¬â€')
-		text = text.replace('\u2013',"Ã¢â‚¬â€œ")
-		text = text.replace('&#8216;',"'")
-		text = text.replace('&#8217;',"'")
-		text = text.replace('&#8220;',"'")
-		text = text.replace('&#8221;','"')
-		text = text.replace('&#8222;',',')
-		text = text.replace('\u014d','Ã…Â')
-		text = text.replace('\u016b','Ã…Â«')
-		text = text.replace('\u201a','\"')
-		text = text.replace('\u2018','\"')
-		text = text.replace('\u201e','\"')
-		text = text.replace('\u201c','\"')
-		text = text.replace('\u201d','\'')
-		text = text.replace('\u2019s','Ã¢â‚¬â„¢')
-		text = text.replace('\u00e0','ÃƒÂ ')
-		text = text.replace('\u00e7','ÃƒÂ§')
-		text = text.replace('\u00e8','ÃƒÂ©')
-		text = text.replace('\u00e9','ÃƒÂ©')
-		text = text.replace('\u00c1','ÃƒÂ')
-		text = text.replace('\u00c6','Ãƒâ€ ')
-		text = text.replace('\u00e1','ÃƒÂ¡')
-		text = text.replace('&#xC4;','Ãƒâ€ž')
-		text = text.replace('&#xD6;','Ãƒâ€“')
-		text = text.replace('&#xDC;','ÃƒÅ“')
-		text = text.replace('&#xE4;','ÃƒÂ¤')
-		text = text.replace('&#xF6;','ÃƒÂ¶')
-		text = text.replace('&#xFC;','ÃƒÂ¼')
-		text = text.replace('&#xDF;','ÃƒÅ¸')
-		text = text.replace('&#xE9;','ÃƒÂ©')
-		text = text.replace('&#xB7;','Ã‚Â·')
-		text = text.replace("&#x27;","'")
-		text = text.replace("&#x26;","&")
-		text = text.replace("&#xFB;","ÃƒÂ»")
-		text = text.replace("&#xF8;","ÃƒÂ¸")
-		text = text.replace("&#x21;","!")
-		text = text.replace("&#x3f;","?")
-		text = text.replace('&#8230;','...')
-		text = text.replace('\u2026','...')
-		text = text.replace('&hellip;','...')
-		text = text.replace('&#8234;','')
+	def decodeHtml(self, text):
+		text = text.replace('&auml;', 'ä')
+		text = text.replace('\u00e4', 'ä')
+		text = text.replace('&#228;', 'ä')
+
+		text = text.replace('&Auml;', 'Ä')
+		text = text.replace('\u00c4', 'Ä')
+		text = text.replace('&#196;', 'Ä')
+
+		text = text.replace('&ouml;', 'ö')
+		text = text.replace('\u00f6', 'ö')
+		text = text.replace('&#246;', 'ö')
+
+		text = text.replace('&ouml;', 'Ö')
+		text = text.replace('&Ouml;', 'Ö')
+		text = text.replace('\u00d6', 'Ö')
+		text = text.replace('&#214;', 'Ö')
+
+		text = text.replace('&uuml;', 'ü')
+		text = text.replace('\u00fc', 'ü')
+		text = text.replace('&#252;', 'ü')
+
+		text = text.replace('&Uuml;', 'Ü')
+		text = text.replace('\u00dc', 'Ü')
+		text = text.replace('&#220;', 'Ü')
+
+		text = text.replace('&szlig;', 'ß')
+		text = text.replace('\u00df', 'ß')
+		text = text.replace('&#223;', 'ß')
+
+		text = text.replace('&amp;', '&')
+		text = text.replace('&quot;', '\"')
+		text = text.replace('&gt;', '>')
+		text = text.replace('&apos;', "'")
+		text = text.replace('&acute;', '\'')
+		text = text.replace('&ndash;', '-')
+		text = text.replace('&bdquo;', '"')
+		text = text.replace('&rdquo;', '"')
+		text = text.replace('&ldquo;', '"')
+		text = text.replace('&lsquo;', '\'')
+		text = text.replace('&rsquo;', '\'')
+		text = text.replace('&#034;', '"')
+		text = text.replace('&#34;', '"')
+		text = text.replace('&#038;', '&')
+		text = text.replace('&#039;', '\'')
+		text = text.replace('&#39;', '\'')
+		text = text.replace('&#160;', ' ')
+		text = text.replace('\u00a0', ' ')
+		text = text.replace('\u00b4', '\'')
+		text = text.replace('\u003d', '=')
+		text = text.replace('\u0026', '&')
+		text = text.replace('&#174;', '')
+		text = text.replace('&#225;', 'a')
+		text = text.replace('&#233;', 'e')
+		text = text.replace('&#243;', 'o')
+		text = text.replace('&#8211;', "-")
+		text = text.replace('&#8212;', "—")
+		text = text.replace('&mdash;', '—')
+		text = text.replace('\u2013', "–")
+		text = text.replace('&#8216;', "'")
+		text = text.replace('&#8217;', "'")
+		text = text.replace('&#8220;', "'")
+		text = text.replace('&#8221;', '"')
+		text = text.replace('&#8222;', ',')
+		text = text.replace('\u014d', 'o')
+		text = text.replace('\u016b', 'u')
+		text = text.replace('\u201a', '\"')
+		text = text.replace('\u2018', '\"')
+		text = text.replace('\u201e', '\"')
+		text = text.replace('\u201c', '\"')
+		text = text.replace('\u201d', '\'')
+		text = text.replace('\u2019s', '’')
+		text = text.replace('\u00e0', 'à')
+		text = text.replace('\u00e7', 'ç')
+		text = text.replace('\u00e8', 'é')
+		text = text.replace('\u00e9', 'é')
+		text = text.replace('\u00c1', 'Á')
+		text = text.replace('\u00c6', 'Æ')
+		text = text.replace('\u00e1', 'á')
+
+		text = text.replace('&#xC4;', 'Ä')
+		text = text.replace('&#xD6;', 'Ö')
+		text = text.replace('&#xDC;', 'Ü')
+		text = text.replace('&#xE4;', 'ä')
+		text = text.replace('&#xF6;', 'ö')
+		text = text.replace('&#xFC;', 'ü')
+		text = text.replace('&#xDF;', 'ß')
+		text = text.replace('&#xE9;', 'é')
+		text = text.replace('&#xB7;', '·')
+		text = text.replace("&#x27;", "'")
+		text = text.replace("&#x26;", "&")
+		text = text.replace("&#xFB;", "û")
+		text = text.replace("&#xF8;", "ø")
+		text = text.replace("&#x21;", "!")
+		text = text.replace("&#x3f;", "?")
+
+		text = text.replace('&#8230;', '...')
+		text = text.replace('\u2026', '...')
+		text = text.replace('&hellip;', '...')
+
+		text = text.replace('&#8234;', '')
 		return text
 
 	def autostart(session, **kwargs):
