@@ -1213,8 +1213,8 @@ def readSkin(screen, skin, names, desktop):
 		context.x = 0 # reset offsets, all components are relative to screen
 		context.y = 0 # coordinates.
 		process_screen(myscreen, context)
-	except Exception as e:
-		print("[Skin] SKIN ERROR in %s:" % name, e)
+	except Exception as err:
+		print("[Skin] Error in screen '%s' %s!" % (name, str(err)))
 
 	from Components.GUIComponent import GUIComponent
 	nonvisited_components = [x for x in set(screen.keys()) - visited_components if isinstance(x, GUIComponent)]
@@ -1231,3 +1231,19 @@ def getSkinFactor():
 	# 	print("[Skin] Warning: Unexpected result for getSkinFactor '%0.4f'!" % skinfactor)
 	return skinfactor
 
+def findSkinScreen(names):
+	if not isinstance(names, list):
+		names = [names]
+	for name in names:  # Try all names given, the first one found is the one that will be used by the skin engine.
+		screen, path = domScreens.get(name, (None, None))
+		if screen is not None:
+			return name
+	return None
+
+def dump(x, i=0):
+	print(" " * i + str(x))
+	try:
+		for n in x.childNodes:
+			dump(n, i + 1)
+	except Exception:
+		None
