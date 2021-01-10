@@ -559,9 +559,9 @@ class LogManagerViewLog(Screen):
 			f = 1.5
 		else:
 			f = 3
-		font = gFont("Console", int(16*f))
+		font = gFont("Console", int(22*f))
 		if not int(fontRenderClass.getInstance().getLineHeight(font)):
-			font = gFont("Regular", int(16*f))
+			font = gFont("Regular", int(22*f))
 		self["list"].instance.setFont(font)
 		fontwidth = getTextBoundarySize(self.instance, font, self["list"].instance.size(), _(" ")).width()
 		listwidth = int(self["list"].instance.size().width() / fontwidth) - 2
