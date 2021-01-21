@@ -8,7 +8,7 @@ import os
 from os import path, remove, listdir
 
 profile("LOAD:enigma_skin")
-from enigma import eSize, ePoint, eRect, gFont, eWindow, eLabel, ePixmap, eWindowStyleManager, addFont, gRGB, eWindowStyleSkinned, getDesktop
+from enigma import eSize, ePoint, eRect, gFont, eWindow, eLabel, ePixmap, eWindowStyleManager, addFont, gRGB, eWindowStyleSkinned, getDesktop, getFontFaces
 from Components.config import ConfigSubsection, ConfigText, config, ConfigYesNo, ConfigSelection, ConfigNothing, configfile
 from Components.Converter.Converter import Converter
 from Components.Sources.Source import Source, ObsoleteSource
@@ -391,13 +391,22 @@ def parseSize(s, scale, object = None, desktop = None):
 	yval = parseCoordinate(y, parentsize.height())
 	return eSize(xval * scale[0][0] // scale[0][1], yval * scale[1][0] // scale[1][1])
 
-def parseFont(s, scale):
+def parseFont(s, scale=((1, 1), (1, 1))):
+	if ";" in s:
+		name, size = s.split(";")
+	else:
+		name = s
+		size = None
 	try:
-		f = fonts[s]
+		f = fonts[name]
 		name = f[0]
-		size = f[1]
-	except:
-		name, size = s.split(';')
+		size = f[1] if size is None else size
+	except KeyError:
+		if name not in getFontFaces():
+			f = fonts["Body"]
+			print("[Skin] Error: Font '%s' (in '%s') is not defined!  Using 'Body' font ('%s') instead." % (name, s, f[0]))
+			name = f[0]
+			size = f[1] if size is None else size
 	return gFont(name, int(size) * scale[0][0] // scale[0][1])
 
 def parseColor(s):
