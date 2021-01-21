@@ -462,8 +462,8 @@ class OscamInfoMenu(Screen):
 			self.session.open(oscInfo, "c")
 		elif entry == 2:
 			self.session.open(oscInfo, "s")
-		elif entry == 3:
-			self.session.open(oscInfo, "l")
+		#elif entry == 3:
+			#self.session.open(oscInfo, "l")
 		elif entry == 4:
 			osc = OscamInfo()
 			reader = osc.getReaders("cccam")  # get list of available CCcam-Readers

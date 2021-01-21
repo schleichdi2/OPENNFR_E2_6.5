@@ -591,8 +591,8 @@ int eDVBFrontend::PreferredFrontendIndex = -1;
 
 eDVBFrontend::eDVBFrontend(const char *devicenodename, int fe, int &ok, bool simulate, eDVBFrontend *simulate_fe)
 	:m_simulate(simulate), m_enabled(false), m_fbc(false), m_simulate_fe(simulate_fe), m_type(-1), m_dvbid(fe), m_slotid(fe)
-	,m_fd(-1), m_teakover(0), m_waitteakover(0), m_break_teakover(0), m_break_waitteakover(0), m_dvbversion(0), m_configRetuneNoPatEntry(0), m_rotor_mode(false)
-	,m_need_rotor_workaround(false), m_need_delivery_system_workaround(false), m_multitype(false), m_state(stateClosed), m_timeout(0), m_tuneTimer(0)
+	,m_fd(-1), m_teakover(0), m_waitteakover(0), m_break_teakover(0), m_break_waitteakover(0), m_dvbversion(0), m_rotor_mode(false)
+	,m_need_rotor_workaround(false), m_need_delivery_system_workaround(false), m_multitype(false), m_state(stateClosed), m_timeout(0), m_tuneTimer(0), m_configRetuneNoPatEntry(0)
 #if HAVE_ALIEN5
 	,m_looptimeout(100)
 #endif
@@ -1400,15 +1400,11 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 		|| strstr(m_description, "BCM73625 (G3)")
 		|| strstr(m_description, "BCM45208")
 		|| strstr(m_description, "BCM45308")
-		|| strstr(m_description, "BCM3158") 
+		|| strstr(m_description, "BCM3158")
 		)
 	{
 		ret = (snr * 100) >> 8;
 	}
-	else if (!strcmp(m_description, "DVB-S2 NIM")) // dinobot
-	{
-		ret = (int)(snr / 8);
-	}	
 	else if (!strcmp(m_description, "ATBM781x"))
 	{
 		ret = snr*10;
@@ -1576,7 +1572,7 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 	}
 	else if (!strcmp(m_description, "Si21682") || !strcmp(m_description, "Si2168")) // SF4008 T/T2/C and Zgemma TC Models
 	{
-	    int type = -1;
+		int type = -1;
 		oparm.getSystem(type);
 		switch (type)
 		{
@@ -1623,6 +1619,10 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 	else if (!strncmp(m_description, "Si216", 5)) // all new Models with SI Tuners
 	{
 		ret = snr;
+	}
+	else if (!strcmp(m_description, "DVB-S2 NIM")) // dinobot
+	{
+		ret = (int)(snr / 8);
 	}
 
 	signalqualitydb = ret;

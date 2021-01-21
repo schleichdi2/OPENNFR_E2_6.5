@@ -48,6 +48,10 @@ extern "C" {
 }
 #endif
 
+#ifndef SUBT_TXT_ABNORMAL_PTS_DIFFS
+#define SUBT_TXT_ABNORMAL_PTS_DIFFS 1800000
+#endif
+
 class eStaticServiceDVBInformation: public iStaticServiceInformation
 {
 	DECLARE_REF(eStaticServiceDVBInformation);
@@ -481,7 +485,7 @@ RESULT eStaticServiceDVBPVRInformation::getEvent(const eServiceReference &ref, e
 {
 	if (!ref.path.empty())
 	{
-		if (ref.path.substr(0, 7) == "http://")
+		if (ref.path.find("://") != std::string::npos)
 		{
 			eServiceReference equivalentref(ref);
 			/* this might be a scrambled stream (id + 0x100), force equivalent dvb type */
@@ -936,7 +940,7 @@ RESULT eServiceFactoryDVB::play(const eServiceReference &ref, ePtr<iPlayableServ
 
 RESULT eServiceFactoryDVB::record(const eServiceReference &ref, ePtr<iRecordableService> &ptr)
 {
-	bool isstream = ref.path.substr(0, 7) == "http://";
+	bool isstream = ref.path.find("://") != std::string::npos;
 	ptr = new eDVBServiceRecord((eServiceReferenceDVB&)ref, isstream);
 	return 0;
 }
@@ -1027,7 +1031,7 @@ eDVBServicePlay::eDVBServicePlay(const eServiceReference &ref, eDVBService *serv
 	m_have_video_pid(0),
 	m_tune_state(-1),
 	m_noaudio(false),
-	m_is_stream(ref.path.substr(0, 7) == "http://"),
+	m_is_stream(ref.path.find("://") != std::string::npos),
 	m_is_pvr(!ref.path.empty() && !m_is_stream),
 	m_is_paused(0),
 	m_timeshift_enabled(0),
@@ -2231,11 +2235,7 @@ int eDVBServicePlay::selectAudioStream(int i)
 		int different_pid = program.videoStreams.empty() && program.audioStreams.size() == 1 && program.audioStreams[stream].rdsPid != -1;
 		if (different_pid)
 			rdsPid = program.audioStreams[stream].rdsPid;
-#if HAVE_HISILICON
-		if (different_pid && (!m_rds_decoder || m_rds_decoder->getPid() != rdsPid))
-#else 
 		if (!m_rds_decoder || m_rds_decoder->getPid() != rdsPid)
-#endif
 		{
 			m_rds_decoder = 0;
 			ePtr<iDVBDemux> data_demux;
@@ -2548,6 +2548,12 @@ RESULT eDVBServicePlay::startTimeshift()
 		fileout << "1";
 	}
 
+	fileout.open("/proc/stb/lcd/symbol_record");
+	if(fileout.is_open())
+	{
+		fileout << "1";
+	}
+
 	delete [] templ;
 
 	if (m_timeshift_fd < 0)
@@ -2588,6 +2594,12 @@ RESULT eDVBServicePlay::stopTimeshift(bool swToLive)
 
 	ofstream fileout;
 	fileout.open("/proc/stb/lcd/symbol_timeshift");
+	if(fileout.is_open())
+	{
+		fileout << "0";
+	}
+	
+	fileout.open("/proc/stb/lcd/symbol_record");
 	if(fileout.is_open())
 	{
 		fileout << "0";
@@ -3452,7 +3464,7 @@ void eDVBServicePlay::newSubtitlePage(const eDVBTeletextSubtitlePage &page)
 		eDVBTeletextSubtitlePage tmppage = page;
 		tmppage.m_have_pts = true;
 
-		if (abs(tmppage.m_pts - pts) > 20*90000)
+		if (abs(tmppage.m_pts - pts) > SUBT_TXT_ABNORMAL_PTS_DIFFS)
 			tmppage.m_pts = pts; // fix abnormal pts diffs
 
 		tmppage.m_pts += subtitledelay;
@@ -3501,7 +3513,7 @@ void eDVBServicePlay::checkSubtitleTiming()
 		int diff = show_time - pos;
 //		eDebug("[eDVBServicePlay] Subtitle show %d page.pts=%lld pts=%lld diff=%d", type, show_time, pos, diff);
 
-		if (diff < 20*90 || diff > 1800000)
+		if (diff < 20*90 || diff > SUBT_TXT_ABNORMAL_PTS_DIFFS)
 		{
 			if (type == TELETEXT)
 			{
@@ -3528,7 +3540,7 @@ void eDVBServicePlay::newDVBSubtitlePage(const eDVBSubtitlePage &p)
 		pts_t pos = 0;
 		if (m_decoder)
 			m_decoder->getPTS(0, pos);
-		if ( abs(pos-p.m_show_time)>1800000 && (m_is_pvr || m_timeshift_enabled))
+		if ( abs(pos-p.m_show_time)>SUBT_TXT_ABNORMAL_PTS_DIFFS && (m_is_pvr || m_timeshift_enabled))
 		{
 			eDebug("[eDVBServicePlay] Subtitle without PTS and recording");
 			int subtitledelay = eConfigManager::getConfigIntValue("config.subtitles.subtitle_noPTSrecordingdelay", 315000);
