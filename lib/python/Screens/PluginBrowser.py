@@ -22,6 +22,8 @@ from Screens.ChoiceBox import ChoiceBox
 from Screens.Console import Console
 from Screens.VirtualKeyBoard import VirtualKeyBoard
 from Plugins.Plugin import PluginDescriptor
+from Plugins.Extensions.Infopanel.PluginWizard import PluginInstall
+from Plugins.Extensions.Infopanel.PluginWizard import PluginDeinstall
 from Tools.Directories import resolveFilename, fileExists, SCOPE_PLUGINS, SCOPE_ACTIVE_SKIN, fileExists
 from Tools.LoadPixmap import LoadPixmap
 
@@ -103,8 +105,9 @@ class PluginBrowser(Screen, ProtectedScreen):
 
 		self["key_red"] = self["red"] = Label(_("Remove plugins"))
 		self["key_green"] = self["green"] = Label(_("Download plugins"))
-		self["key_yellow"] = self["yellow"] = Label("")
-		self["key_blue"] = self["blue"] = Label("")
+		self["key_yellow"] = self["yellow"] = Label(_("PluginInstallWizard"))
+		self["key_blue"] = self["blue"] = Label(_("PluginDeinstallWizard"))
+		self["key_info"] = self["key_Info"] = Label(_(""))
 
 		self.list = []
 		self["list"] = PluginList(self.list)
@@ -115,18 +118,21 @@ class PluginBrowser(Screen, ProtectedScreen):
 			"back": self.keyCancel,
 			"menu": self.menu,
 		})
-		self["PluginDownloadActions"] = ActionMap(["ColorActions"],
+		self["PluginDownloadActions"] = ActionMap(["SetupActions", "ColorActions"],
 		{
 			"red": self.delete,
 			"green": self.download,
 			"blue": self.keyBlue,
+			"yellow": self.wizardinstall,
+			"info": self.keyInfo,	
 		})
-		self["SoftwareActions"] = ActionMap(["ColorActions"],
+		self["SoftwareActions"] = ActionMap(["SetupActions", "ColorActions"],
 		{
 			"red": self.keyRed,
 			"green": self.keyGreen,
 			"yellow": self.keyYellow,
 			"blue": self.keyBlue,
+			"info": self.keyInfo,
 		})
 		self["MoveActions"] = ActionMap(["WizardActions"],
 			{
@@ -157,6 +163,12 @@ class PluginBrowser(Screen, ProtectedScreen):
 	def openSetup(self):
 		from Screens.Setup import Setup
 		self.session.open(Setup, "pluginbrowsersetup")
+	
+	def wizardinstall(self):
+		self.session.open(PluginInstall)
+
+	def wizarddeinstall(self):
+		self.session.open(PluginDeinstall)
 		
 	def isProtected(self):
 		return config.ParentalControl.setuppinactive.value and not config.ParentalControl.config_sections.main_menu.value and config.ParentalControl.config_sections.plugin_browser.value
@@ -253,6 +265,9 @@ class PluginBrowser(Screen, ProtectedScreen):
 				self["yellow"].setText(_("show"))
 
 	def keyBlue(self):
+		self.wizarddeinstall()
+
+	def keyInfo(self):
 		if config.usage.plugins_sort_mode.value == "user":
 			self.toggleSortMode()
 
@@ -342,8 +357,10 @@ class PluginBrowser(Screen, ProtectedScreen):
 			self.list.sort(key=lambda listweight : listweight[0].listweight)
 		self["list"].l.setList(self.list)
 		if self.sort_mode:
-			self["key_blue"].setText(_("Edit mode off"))
-			self["blue"].setText(_("Edit mode off"))
+			self["key_info"].setText(_("Edit mode off"))
+			self["key_Info"].setText(_("Edit mode off"))
+			self["key_blue"].setText(_("PluginDeinstallWizard"))
+			self["blue"].setText(_("PluginDeinstallWizard"))
 			self["key_green"].setText(_("Move mode off"))
 			self["green"].setText(_("Move mode off"))
 			self["key_red"].setText("")
@@ -358,15 +375,19 @@ class PluginBrowser(Screen, ProtectedScreen):
 				self["green"].setText(_("Move mode on"))
 		else:
 			if config.usage.plugins_sort_mode.value == "user":
-				self["key_blue"].setText(_("Edit mode on"))
-				self["blue"].setText(_("Edit mode on"))
+				self["key_info"].setText(_("Edit mode on"))
+				self["key_Info"].setText(_("Edit mode on"))
+				self["key_blue"].setText(_("PluginDeinstallWizard"))
+				self["blue"].setText(_("PluginDeinstallWizard"))
 			else:
+				self["key_info"].setText("")
+				self["key_Info"].setText("")
 				self["key_blue"].setText("")
 				self["blue"].setText("")
 			self["SoftwareActions"].setEnabled(False)
 			self["PluginDownloadActions"].setEnabled(True)
 			self["key_yellow"].setText("")
-			self["yellow"].setText("")
+			self["yellow"].setText("PluginInstallWizard")
 			self["key_red"].setText(_("Remove plugins"))
 			self["red"].setText(_("Remove plugins"))
 			self["key_green"].setText(_("Download plugins"))
