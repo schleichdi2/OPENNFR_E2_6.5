@@ -4,9 +4,9 @@ from Tools.Directories import resolveFilename, SCOPE_ACTIVE_SKIN, defaultPaths, 
 from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixmapAlphaTest
 from os import path
 from Components.config import config
-from enigma import eListboxPythonMultiContent, gFont
+from enigma import eListboxPythonMultiContent, gFont, BT_SCALE, BT_KEEP_ASPECT_RATIO, BT_HALIGN_CENTER, BT_VALIGN_CENTER
 from Tools.LoadPixmap import LoadPixmap
-
+import skin
 def PluginEntryComponent(plugin, width=900):
 	if plugin.icon is None:
 		png = LoadPixmap(resolveFilename(SCOPE_ACTIVE_SKIN, "icons/plugin.png"))
@@ -27,6 +27,24 @@ def PluginEntryComponent(plugin, width=900):
 			MultiContentEntryText(pos=(120, 26), size=(width-120, 17), font=1, text=plugin.description),
 			MultiContentEntryPixmapAlphaTest(pos=(10, 5), size=(100, 40), png = png)
 	]
+
+def PluginEntryComponentSelected(plugin, width=440):
+	if plugin.icon is None:
+		png = LoadPixmap(resolveFilename(SCOPE_ACTIVE_SKIN, "icons/plugin.png"))
+	else:
+		png = plugin.icon
+	nx, ny, nh = skin.parameters.get("PluginBrowserName", (170, 5, 34))
+	dx, dy, dh = skin.parameters.get("PluginBrowserDescr", (170, 37, 28))
+	ix, iy, iw, ih = skin.parameters.get("PluginBrowserIcon", (0, 5, 150, 60))
+	return [
+		plugin,
+		MultiContentEntryText(pos=(nx, ny), size=(width-nx, nh), backcolor_sel = 0xDC143C),
+		MultiContentEntryText(pos=(nx, dy), size=(width-dx, dh), backcolor_sel = 0xDC143C),
+		MultiContentEntryText(pos=(nx, ny), size=(width-nx, nh), font=0, text=plugin.name),
+		MultiContentEntryText(pos=(nx, dy), size=(width-dx, dh), font=1, text=plugin.description),
+		MultiContentEntryPixmapAlphaTest(pos=(ix, iy), size=(iw, ih), png = png, flags = BT_SCALE | BT_KEEP_ASPECT_RATIO | BT_HALIGN_CENTER | BT_VALIGN_CENTER)
+	]
+
 
 def PluginCategoryComponent(name, png, width=900):
 	if getDesktop(0).size().width() == 1920:
