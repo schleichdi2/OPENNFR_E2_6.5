@@ -16,14 +16,14 @@ config.misc.pluginlist.extension_order = ConfigText(default="")
 config.misc.pluginlist.fc_bookmarks_order = ConfigText(default="")
 
 
-
 class ChoiceBox(Screen):
-	def __init__(self, session, title="", list=None, keys=None, selection=0, skin_name=None, text="", reorderConfig="", var="", windowTitle = None, allow_cancel = True, titlebartext = _("Choice Box")):
-		list1 = list
+	def __init__(self, session, title="", list=None, keys=None, selection=0, skin_name=None, text="", reorderConfig="", var="", windowTitle=None, allow_cancel=True, titlebartext=_("Choice Box")):
 		if not windowTitle: #for compatibility
 			windowTitle = titlebartext
-		if not list1: list1 = []
-		if not skin_name: skin_name = []
+		if not list:
+			list = []
+		if not skin_name:
+			skin_name = []
 		Screen.__init__(self, session)
 
 		self.allow_cancel = allow_cancel
@@ -50,6 +50,8 @@ class ChoiceBox(Screen):
 			title = _(title)
 			if len(title) < title_max and title.find('\n') == -1:
 				Screen.setTitle(self, title)
+				if text != "":
+					self["text"] = Label(_(text))
 			elif title.find('\n') != -1:
 				temptext = title.split('\n')
 				if len(temptext[0]) < title_max:
@@ -59,7 +61,7 @@ class ChoiceBox(Screen):
 					while len(temptext) >= count:
 						if labeltext:
 							labeltext += '\n'
-						labeltext = labeltext + temptext[count-1]
+						labeltext = labeltext + temptext[count - 1]
 						count += 1
 						print('[Choicebox] count', count)
 					self["text"].setText(labeltext)
@@ -74,42 +76,19 @@ class ChoiceBox(Screen):
 		if keys is None:
 			self.__keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "red", "green", "yellow", "blue", "text"] + (len(list) - 14) * [""]
 		else:
-			self.__keys = keys + (len(list1) - len(keys)) * [""]
+			self.__keys = keys + (len(list) - len(keys)) * [""]
 
 		self.keymap = {}
 		pos = 0
 		if self.reorderConfig:
 			self.config_type = eval("config.misc.pluginlist." + self.reorderConfig)
 			if self.config_type.value:
-				prev_list1 = zip(list1, self.__keys)
-				prev_list = []
-				for zip1 in prev_list1:
-					prev_list.append(zip1)
-				new_list = []
-				for x in self.config_type.value.split(","):
-					for entry in prev_list:
-						if entry[0][0] == x:
-							new_list.append(entry)
-							prev_list.remove(entry)
-				list3 = zip(*(new_list + prev_list))
-				list2 = []
-				for zip2 in list3:
-					list2.append(zip2)
-				list1, self.__keys = list2[0], list2[1]
-				number = 1
-				new_keys = []
-				for x in self.__keys:
-					if (not x or x.isdigit()) and number <= 10:
-						new_keys.append(str(number % 10))
-						number+=1
-					else:
-						new_keys.append(not x.isdigit() and x or "")
-				self.__keys = new_keys
-		for x in list1:
+				list = self.makeList(list)
+		for x in list:
 			strpos = str(self.__keys[pos])
 			self.list.append(ChoiceEntryComponent(key=strpos, text=x))
 			if self.__keys[pos] != "":
-				self.keymap[self.__keys[pos]] = list1[pos]
+				self.keymap[self.__keys[pos]] = list[pos]
 			self.summarylist.append((self.__keys[pos], x[0]))
 			pos += 1
 		self["windowtitle"] = Label(_(windowTitle))
@@ -151,6 +130,27 @@ class ChoiceBox(Screen):
 			"back": self.cancel,
 		}, prio=-1)
 		self.onShown.append(self.onshow)
+
+	def makeList(self, items):
+		prev_list = list(zip(items, self.__keys))
+		new_list = []
+		for x in self.config_type.value.split(","):
+			for entry in prev_list:
+				if entry[0][0] == x:
+					new_list.append(entry)
+					prev_list.remove(entry)
+		items = list(zip(*(new_list + prev_list)))
+		items, self.__keys = items[0], items[1]
+		number = 1
+		new_keys = []
+		for x in self.__keys:
+			if (not x or x.isdigit()) and number <= 10:
+				new_keys.append(str(number % 10))
+				number += 1
+			else:
+				new_keys.append(not x.isdigit() and x or "")
+		self.__keys = new_keys
+		return items
 
 	def onshow(self):
 		if self.skinName and 'SoftwareUpdateChoices' in self.skinName and self.var:
@@ -206,12 +206,12 @@ class ChoiceBox(Screen):
 			self["list"].instance.resize(enigma.eSize(*listsize))
 
 		wsizex = textsize[0]
-		wsizey = textsize[1]+listsize[1]
+		wsizey = textsize[1] + listsize[1]
 		wsize = (wsizex, wsizey)
 		self.instance.resize(enigma.eSize(*wsize))
 
 		# center window
-		self.instance.move(enigma.ePoint((desktop_w-wsizex)//2, (desktop_h-wsizey)//2))
+		self.instance.move(enigma.ePoint((desktop_w - wsizex) // 2, (desktop_h - wsizey) // 2))
 
 	def left(self):
 		if len(self["list"].list) > 0:
@@ -293,7 +293,7 @@ class ChoiceBox(Screen):
 		pos = 0
 		summarytext = ""
 		for entry in self.summarylist:
-			if curpos-2 < pos < curpos+5:
+			if curpos - 2 < pos < curpos + 5:
 				if pos == curpos:
 					summarytext += ">"
 					self["summary_selection"].setText(entry[1])
@@ -345,4 +345,3 @@ class ChoiceBox(Screen):
 				self["list"].up()
 			self.config_type.value = ",".join(x[0][0] for x in self.list)
 			self.config_type.save()
-

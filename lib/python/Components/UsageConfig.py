@@ -900,17 +900,18 @@ def InitUsageConfig():
 	config.usage.show_slider_value = ConfigYesNo(default=True)
 
 	config.epg = ConfigSubsection()
-	config.epg.eit = ConfigYesNo(default = True)
-	config.epg.mhw = ConfigYesNo(default = False)
-	config.epg.freesat = ConfigYesNo(default = True)
-	config.epg.viasat = ConfigYesNo(default = True)
-	config.epg.netmed = ConfigYesNo(default = True)
-	config.epg.virgin = ConfigYesNo(default = False)
-	config.epg.opentv = ConfigYesNo(default = True)
-	config.epg.saveepg = ConfigYesNo(default = True)
-	
-	config.misc.showradiopic = ConfigYesNo(default = True)
-	config.misc.bootvideo = ConfigYesNo(default = True)
+	config.epg.eit = ConfigYesNo(default=True)
+	config.epg.mhw = ConfigYesNo(default=True)
+	config.epg.freesat = ConfigYesNo(default=True)
+	config.epg.viasat = ConfigYesNo(default=True)
+	config.epg.netmed = ConfigYesNo(default=True)
+	config.epg.virgin = ConfigYesNo(default=True)
+	config.epg.opentv = ConfigYesNo(default=True)
+	config.epg.saveepg = ConfigYesNo(default=True)
+
+	config.misc.showradiopic = ConfigYesNo(default=True)
+	config.misc.bootvideo = ConfigYesNo(default=True)
+
 	def EpgSettingsChanged(configElement):
 		from enigma import eEPGCache
 		mask = 0xffffffff
@@ -936,7 +937,7 @@ def InitUsageConfig():
 	config.epg.netmed.addNotifier(EpgSettingsChanged)
 	config.epg.virgin.addNotifier(EpgSettingsChanged)
 	config.epg.opentv.addNotifier(EpgSettingsChanged)
-	
+
 	config.epg.maxdays = ConfigSelectionNumber(min = 1, max = 365, stepwidth = 1, default = 7, wraparound = True)
 	def EpgmaxdaysChanged(configElement):
 		from enigma import eEPGCache
