@@ -14605,3 +14605,14 @@ msgstr "Startzeit :"
 
 msgid "End Time :"
 msgstr "Endzeit :"
+
+msgid ""
+"In order to record a timer, a tuner was freed successfully:\n"
+"\n"
+msgstr ""
+"Um eine Timeraufnahme zu starten, wurde erfolgreich ein Tuner frei gemacht:\n"
+"\n"
+
+msgid "The TV was switched to the recording service!\n"
+msgstr "Es wurde auf den Sender umgeschaltet, auf dem die Aufnahme läuft.\n"
+
