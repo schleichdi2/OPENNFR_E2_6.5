@@ -37,8 +37,8 @@ from Screens.OpenNFR_wizard import OpenNFRWizardSetup
 from Screens.UserInterfacePositioner import UserInterfacePositioner
 from Plugins.Extensions.OpenWebif.plugin import OpenWebifConfig
 from Tools.Directories import isPluginInstalled
-
 from Screens.Menu import Menu, mdom
+
 if isPluginInstalled("HdmiCEC"):
 	config.hdmicec = ConfigSubsection()
 	config.hdmicec.enabled = ConfigYesNo(default = False) # query from this value in hdmi_cec.cpp
@@ -102,6 +102,7 @@ if isPluginInstalled("HdmiCEC"):
 		from Plugins.SystemPlugins.HdmiCEC.plugin import HdmiCECSetupScreen
 	except:
 		pass
+
 from Plugins.SystemPlugins.SoftwareManager.ImageBackup import ImageBackup#, TimerImageManager, AutoImageManagerTimer
 from enigma import *
 from Screens.PluginBrowser import *
@@ -189,7 +190,7 @@ class EasySetup(ConfigListScreen, Screen):
 		self.skinName = ["EasySetup"]
 		config.easysetup = ConfigSubsection()
 		config.easysetup.restart = ConfigBoolean(default = False)	
-		config.easysetup.backup = ConfigYesNo(default=True)	
+		config.easysetup.backup = ConfigYesNo(default=False)	
 		config.easysetup.hddsetup = ConfigYesNo(default=False)
 		config.easysetup.records = ConfigYesNo(default=False)
 		config.easysetup.timeshift = ConfigYesNo(default=False)
@@ -290,18 +291,18 @@ class EasySetup(ConfigListScreen, Screen):
 		if config.easysetup.m3u.value is True:
 			self.session.openWithCallback(self.run8, IPTV)
 		else:
-				self.run8()
+			self.run8()
 	def run8(self):
 		self.runed = "8"
-		if config.easysetup.hdmicec.value is True and os.path.isfile("/usr/lib/enigma2/python/Plugins/SystemPlugins/HdmiCEC/plugin.pyo") is True:
-			self.session.openWithCallback(self.run10, HdmiCECSetupScreen)
+		if config.easysetup.hdmicec.value is True and isPluginInstalled("HdmiCEC"):
+			self.session.openWithCallback(self.run9, HdmiCECSetupScreen)
 		else:
 			self.run9()
 
 	def run9(self):
 		self.runed = "9"
 		if config.easysetup.password.value is True:
-			self.session.openWithCallback(self.run11, NFRPasswdScreen)
+			self.session.openWithCallback(self.run10, NFRPasswdScreen)
 		else:
 			self.run10()
 
@@ -317,21 +318,21 @@ class EasySetup(ConfigListScreen, Screen):
 		if config.wizardsetup.UserInterfacePositioner.value is True:
 			self.Console = Console()
 			self.Console.ePopen('/usr/bin/showiframe /usr/share/enigma2/hd-testcard.mvi')
-			self.session.openWithCallback(self.run11b, UserInterfacePositioner)  
+			self.session.openWithCallback(self.run11a, UserInterfacePositioner)  
 		else:
 			self.run11a()
 
 	def run11a(self):
 		self.runed = "11a"
 		if config.wizardsetup.OpenWebifConfig.value is True:
-			self.session.openWithCallback(self.run11c, OpenWebifConfig)
+			self.session.openWithCallback(self.run11b, OpenWebifConfig)
 		else:
 			self.run11b()
 
 	def run11b(self):
 		self.runed = "11b"
 		if config.wizardsetup.ipkinstall.value is True:
-			self.session.openWithCallback(self.run11e, InfopanelManagerScreen)
+			self.session.openWithCallback(self.run11c, InfopanelManagerScreen)
 		else:
 			self.run11c()  
 
