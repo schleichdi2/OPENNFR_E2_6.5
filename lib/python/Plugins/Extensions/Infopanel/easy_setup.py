@@ -14,7 +14,7 @@ from Plugins.Plugin import PluginDescriptor
 from Components.Pixmap import Pixmap
 from Components.PluginComponent import plugins
 from Screens.Console import Console
-from Tools.Directories import fileExists, resolveFilename, SCOPE_CURRENT_SKIN, SCOPE_PLUGINS
+from Tools.Directories import fileExists, resolveFilename, SCOPE_CURRENT_SKIN, SCOPE_PLUGINS, isPluginInstalled
 from os import popen, system, remove, listdir, chdir, getcwd, statvfs, mkdir, path, walk
 from Screens.MessageBox import MessageBox
 from Components.MenuList import MenuList

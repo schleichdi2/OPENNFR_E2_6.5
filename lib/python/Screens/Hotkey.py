@@ -16,6 +16,7 @@ from enigma import eServiceReference, eActionMap
 from Components.Label import Label
 from boxbranding import getHaveHDMIinHD, getHaveHDMIinFHD, getHaveCI
 import os
+from Tools.Directories import isPluginInstalled
 
 def gethotkeysKeys():
 	return [(_("Info (EPG)"), "info", "Infobar/InfoPressed/1"),
@@ -263,9 +264,9 @@ def getHotkeyFunctions():
 			x = x[:-3]
 			hotkeyFunctions.append((_("Shellscript") + " " + x, "Shellscript/" + x, "Shellscripts"))
 
-	if isPluginInstalled("ScriptRunner"):
+	if isPluginInstalled("Infopanel", "ScriptRunner"):
 		hotkeyFunctions.append((_("ScriptRunner"), "ScriptRunner/", "Plugins"))
-	if isPluginInstalled("Infopanel"):
+	if isPluginInstalled("Infopanel", "QuickMenu"):
 		hotkeyFunctions.append((_("QuickMenu"), "QuickMenu/", "Plugins"))
 	if isPluginInstalled("Kodi"):
 		hotkeyFunctions.append((_("Kodi MediaCenter"), "Kodi/", "Plugins"))
