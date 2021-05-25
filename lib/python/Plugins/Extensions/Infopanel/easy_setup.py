@@ -181,7 +181,7 @@ try:
 	panel.write("Keymap: %s " % (config.usage.keymap.value)+ '\n')
 except:
 	panel.write("Keymap: keymap file not found !!" + '\n')
-panel.close()    
+panel.close()
 
 class EasySetup(ConfigListScreen, Screen):
 	__module__ = __name__
@@ -189,8 +189,8 @@ class EasySetup(ConfigListScreen, Screen):
 		Screen.__init__(self, session)
 		self.skinName = ["EasySetup"]
 		config.easysetup = ConfigSubsection()
-		config.easysetup.restart = ConfigBoolean(default = False)	
-		config.easysetup.backup = ConfigYesNo(default=False)	
+		config.easysetup.restart = ConfigBoolean(default = False)
+		config.easysetup.backup = ConfigYesNo(default=False)
 		config.easysetup.hddsetup = ConfigYesNo(default=False)
 		config.easysetup.records = ConfigYesNo(default=False)
 		config.easysetup.timeshift = ConfigYesNo(default=False)
@@ -204,7 +204,7 @@ class EasySetup(ConfigListScreen, Screen):
 		config.wizardsetup.UserInterfacePositioner = ConfigYesNo(default = False) 
 		config.wizardsetup.OpenWebifConfig = ConfigYesNo(default = False)
 		config.wizardsetup.poweroffsetup = ConfigYesNo(default = False)
-		config.wizardsetup.ipkinstall = ConfigYesNo(default = False)        	
+		config.wizardsetup.ipkinstall = ConfigYesNo(default = False)
 		self.backup = '0'
 		self.runed = '0'
 		self['spaceused'] = ProgressBar()
@@ -276,7 +276,7 @@ class EasySetup(ConfigListScreen, Screen):
 	def run5(self):
 		self.runed = "5"
 		if config.easysetup.Hotkey.value is True:
-			self.session.openWithCallback(self.run6,  HotkeySetup)
+			self.session.openWithCallback(self.run6, HotkeySetup)
 		else:
 			self.run6()
 
@@ -316,8 +316,8 @@ class EasySetup(ConfigListScreen, Screen):
 	def run11(self):
 		self.runed = "11"
 		if config.wizardsetup.UserInterfacePositioner.value is True:
-			self.Console = Console()
-			self.Console.ePopen('/usr/bin/showiframe /usr/share/enigma2/hd-testcard.mvi')
+			#self.Console = Console()
+			#self.Console.ePopen('/usr/bin/showiframe /usr/share/enigma2/hd-testcard.mvi')
 			self.session.openWithCallback(self.run11a, UserInterfacePositioner)  
 		else:
 			self.run11a()
@@ -350,13 +350,13 @@ class EasySetup(ConfigListScreen, Screen):
 		else:
 			self.closetest()
 
-	def closetest(self, res = None):            
+	def closetest(self, res = None):
 		config.misc.firstrun = ConfigBoolean(default = True)
 		if config.easysetup.restart.value == True:
 			if config.misc.firstrun.value == False:
 				config.easysetup.restart.setValue(False)
 				config.easysetup.restart.save()
-				quitMainloop(3)            
+				quitMainloop(3)
 			else:
 				print("restart after Wizard")
 				self.close()
@@ -385,7 +385,7 @@ class EasySetup(ConfigListScreen, Screen):
 		elif self.runed == "7":
 			self.run8()
 		elif self.runed == "8":
-			self.run9()     
+			self.run9()
 		elif self.runed == "9":
 			self.run10()
 		elif self.runed == "10":
@@ -429,7 +429,7 @@ class KeymapSel(ConfigListScreen, Screen):
 		if os.path.isfile(ntrkey):
 			keySel.append(('keymap.ntr', _("Neut  (keymap.ntr)")))
 		if os.path.isfile(u80key):
-			keySel.append(('keymap.u80', _("UP80  (keymap.u80)")))			
+			keySel.append(('keymap.u80', _("UP80  (keymap.u80)")))
 		if self.actkeymap == usrkey and not os.path.isfile(usrkey):
 			setDefaultKeymap()
 		if self.actkeymap == ntrkey and not os.path.isfile(ntrkey):
