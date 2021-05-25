@@ -10,7 +10,7 @@ import enigma
 from Components.About import about
 from Components.Harddisk import harddiskmanager
 from Components.config import ConfigSubsection, ConfigYesNo, config, ConfigSelection, ConfigText, ConfigNumber, ConfigSet, ConfigLocations, NoSave, ConfigClock, ConfigInteger, ConfigBoolean, ConfigPassword, ConfigIP, ConfigSlider, ConfigSelectionNumber, ConfigFloat, ConfigDirectory, ConfigDictionarySet
-from Tools.Directories import resolveFilename, SCOPE_HDD, SCOPE_TIMESHIFT, SCOPE_AUTORECORD, SCOPE_SYSETC, defaultRecordingLocation, fileExists
+from Tools.Directories import resolveFilename, SCOPE_HDD, SCOPE_TIMESHIFT, SCOPE_AUTORECORD, SCOPE_SYSETC, defaultRecordingLocation, fileExists, isPluginInstalled
 from Components.NimManager import nimmanager
 from Components.ServiceList import refreshServiceList
 from Components.SystemInfo import SystemInfo
@@ -430,8 +430,8 @@ def InitUsageConfig():
 	config.usage.updownbutton_mode = ConfigSelection(default="1", choices = [
 					("0", _("Just change channels")),
 					("1", _("Channel List"))])
-	if fileExists("/usr/lib/enigma2/python/Plugins/Extensions/CoolTVGuide/plugin.py"):
-		config.usage.okbutton_mode = ConfigSelection(default="0", choices = [
+	if isPluginInstalled("CoolTVGuide"):
+		config.usage.okbutton_mode = ConfigSelection(default="0", choices=[
 						("0", _("InfoBar")),
 						("1", _("Channel List")),
 						("2", _("Show CoolInfoGuide")),
@@ -1328,7 +1328,7 @@ def InitUsageConfig():
  					("1", _("with long OK press")),
  					("2", _("with exit button")),
  					("3", _("with left/right buttons"))])					
-	if fileExists("/usr/lib/enigma2/python/Plugins/Extensions/CoolTVGuide/plugin.py"):
+	if isPluginInstalled("CoolTVGuide"):
 		config.plisettings.PLIEPG_mode = ConfigSelection(default="cooltvguide", choices = [
 					("pliepg", _("Show Graphical EPG")),
 					("single", _("Show Single EPG")),

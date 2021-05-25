@@ -36,13 +36,10 @@ from Plugins.Extensions.Infopanel.iptv_convert import IPTV
 from Screens.OpenNFR_wizard import OpenNFRWizardSetup
 from Screens.UserInterfacePositioner import UserInterfacePositioner
 from Plugins.Extensions.OpenWebif.plugin import OpenWebifConfig
-if os.path.isfile("/usr/lib/enigma2/python/Plugins/Extensions/MenuSort/plugin.pyo") is True:
-	try:
-		from Plugins.Extensions.MenuSort.plugin import *
-	except:
-		pass		
+from Tools.Directories import isPluginInstalled
+
 from Screens.Menu import Menu, mdom
-if os.path.isfile("/usr/lib/enigma2/python/Plugins/SystemPlugins/HdmiCEC/plugin.pyo") is True:
+if isPluginInstalled("HdmiCEC"):
 	config.hdmicec = ConfigSubsection()
 	config.hdmicec.enabled = ConfigYesNo(default = False) # query from this value in hdmi_cec.cpp
 	config.hdmicec.control_tv_standby = ConfigYesNo(default = True)
@@ -223,7 +220,7 @@ class EasySetup(ConfigListScreen, Screen):
 		list.append(getConfigListEntry(_('Enable Hotkey Setup?'), config.easysetup.Hotkey, _("Choose your remote buttons.")))
 		list.append(getConfigListEntry(_('Enable Channellist Setup?'), config.easysetup.channellist, _("Choose your Channel selection config.")))
 		list.append(getConfigListEntry(_('Enable M3U Convert to Channellist Setup?'), config.easysetup.m3u, _("Install your IPTV-m3u-files into channellist.\nFirst you must coppy a M3U-List to /etc/enigma2")))
-		if os.path.isfile("/usr/lib/enigma2/python/Plugins/SystemPlugins/HdmiCEC/plugin.pyo") is True:
+		if isPluginInstalled("HdmiCEC"):
 			list.append(getConfigListEntry(_('Enable HDMI-CEC Setup?'), config.easysetup.hdmicec, _("Choose your HDMI-CEC config.")))
 		list.append(getConfigListEntry(_('Enable Password change?'), config.easysetup.password, _("Change the rootpassword for login in ftp, telnet and webif.")))
 		list.append(getConfigListEntry(_('Enable Display Setup?'), config.easysetup.displaysetup, _("Choose your Display config.")))

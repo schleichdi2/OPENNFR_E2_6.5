@@ -262,15 +262,16 @@ def getHotkeyFunctions():
 		for x in [x for x in os.listdir("/usr/script") if x.endswith(".sh")]:
 			x = x[:-3]
 			hotkeyFunctions.append((_("Shellscript") + " " + x, "Shellscript/" + x, "Shellscripts"))
-	if os.path.isfile("/usr/lib/enigma2/python/Plugins/Extensions/Infopanel/ScriptRunner.py"):
+
+	if isPluginInstalled("ScriptRunner"):
 		hotkeyFunctions.append((_("ScriptRunner"), "ScriptRunner/", "Plugins"))
-	if os.path.isfile("/usr/lib/enigma2/python/Plugins/Extensions/Infopanel/QuickMenu.py"):
+	if isPluginInstalled("Infopanel"):
 		hotkeyFunctions.append((_("QuickMenu"), "QuickMenu/", "Plugins"))
-	if os.path.isfile("/usr/lib/enigma2/python/Plugins/Extensions/Kodi/plugin.py"):
+	if isPluginInstalled("Kodi"):
 		hotkeyFunctions.append((_("Kodi MediaCenter"), "Kodi/", "Plugins"))
-	if os.path.isfile("/usr/lib/enigma2/python/Plugins/SystemPlugins/BluetoothSetup/plugin.py"):
+	if isPluginInstalled("BluetoothSetup"):
 		hotkeyFunctions.append((_("Bluetooth Setup"), "Bluetooth/", "Plugins"))
-	if os.path.isfile("/usr/lib/enigma2/python/Plugins/Extensions/Chromium/plugin.py"):
+	if isPluginInstalled("Chromium"):
 		hotkeyFunctions.append((_("Youtube TV"), "YoutubeTV/", "Plugins"))
 	return hotkeyFunctions
 
@@ -638,7 +639,7 @@ class InfoBarHotkey():
 					self.session.open(Execute, selected[1] + " shellscript", None, command)
 				else:
 					from Screens.Console import Console
-					exec ("self.session.open(Console,_(selected[1]),[command])")
+					exec("self.session.open(Console,_(selected[1]),[command])")
 			elif selected[0] == "EMC":
 				try:
 					from Plugins.Extensions.EnhancedMovieCenter.plugin import showMoviesNew
@@ -647,23 +648,23 @@ class InfoBarHotkey():
 				except Exception as e:
 					print('[EMCPlayer] showMovies exception:\n' + str(e))
 			elif selected[0] == "ScriptRunner":
-				if os.path.isfile("/usr/lib/enigma2/python/Plugins/Extensions/Infopanel/ScriptRunner.py"):
+				if isPluginInstalled("Infopanel", "ScriptRunner"):
 					from Plugins.Extensions.Infopanel.ScriptRunner import ScriptRunner
-					self.session.open (ScriptRunner)
+					self.session.open(ScriptRunner)
 			elif selected[0] == "QuickMenu":
-				if os.path.isfile("/usr/lib/enigma2/python/Plugins/Extensions/Infopanel/QuickMenu.py"):
+				if isPluginInstalled("Infopanel", "QuickMenu"):
 					from Plugins.Extensions.Infopanel.QuickMenu import QuickMenu
-					self.session.open (QuickMenu)
+					self.session.open(QuickMenu)
 			elif selected[0] == "Kodi":
-				if os.path.isfile("/usr/lib/enigma2/python/Plugins/Extensions/Kodi/plugin.py"):
+				if isPluginInstalled("Kodi"):
 					from Plugins.Extensions.Kodi.plugin import KodiMainScreen
 					self.session.open(KodiMainScreen)
 			elif selected[0] == "Bluetooth":
-				if os.path.isfile("/usr/lib/enigma2/python/Plugins/SystemPlugins/BluetoothSetup/plugin.py"):
+				if isPluginInstalled("BluetoothSetup"):
 					from Plugins.SystemPlugins.BluetoothSetup.plugin import BluetoothSetup
 					self.session.open(BluetoothSetup)
 			elif selected[0] == "YoutubeTV":
-				if os.path.isfile("/usr/lib/enigma2/python/Plugins/Extensions/Chromium/plugin.py"):
+				if isPluginInstalled("Chromium"):
 					from Plugins.Extensions.Chromium.youtube import YoutubeTVWindow
 					self.session.open(YoutubeTVWindow)
 

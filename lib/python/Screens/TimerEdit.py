@@ -20,6 +20,7 @@ from time import time
 from timer import TimerEntry as RealTimerEntry
 from Screens.InputBox import PinInput
 from functools import cmp_to_key
+from Tools.Directories import isPluginInstalled
 
 class TimerEditList(Screen):
 	EMPTY = 0
