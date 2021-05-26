@@ -5,7 +5,7 @@ SUBDIRS = SoftwareManager PositionerSetup Satfinder \
 	CommonInterfaceAssignment \
 	HdmiCEC VideoClippingSetup \
 	VideoEnhancement WirelessLan NetworkWizard \
-	SABnzbdSetup FastScan SatelliteEquipmentControl DiseqcTester LCNScanner
+	SABnzbdSetup SatelliteEquipmentControl DiseqcTester LCNScanner
 
 
 install_PYTHON = __init__.py
