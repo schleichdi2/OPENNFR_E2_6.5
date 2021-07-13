@@ -10338,10 +10338,10 @@ msgstr "Reiniciando la interfaz de usuario de %s %s."
 #, fuzzy, python-format
 msgid ""
 "The user interface of your %s %s is restarting\n"
-"due to an error in mytest.py"
+"due to an error in StartEnigma.py"
 msgstr ""
 "La interfaz de usuario de %s %s se está reiniciando\n"
-"por un error en mytest.py."
+"por un error en StartEnigma.py."
 
 #
 msgid ""

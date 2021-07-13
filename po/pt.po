@@ -10482,10 +10482,10 @@ msgstr "O interface visual está a reiniciar!"
 #, fuzzy, python-format
 msgid ""
 "The user interface of your %s %s is restarting\n"
-"due to an error in mytest.py"
+"due to an error in StartEnigma.py"
 msgstr ""
 "O enigma2 está a reiniciar\n"
-"devido a um erro em mytest.py"
+"devido a um erro em StartEnigma.py"
 
 #
 msgid ""

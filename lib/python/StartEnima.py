@@ -641,7 +641,7 @@ def runScreenTest():
 			config.easysetup.restart.save()
 			enigma.quitMainloop(3)
 		if result:
-			print("[mytest.py] quitMainloop #3")
+			print("[StartEnigma.py] quitMainloop #3")
 			enigma.quitMainloop(*result)
 			return
 
@@ -703,7 +703,7 @@ def runScreenTest():
 		os.system("killall -9 showiframe")
 	
 	runReactor()
-	print("[mytest.py] normal shutdown")
+	print("[StartEnigma.py] normal shutdown")
 	
 	config.misc.startCounter.save()
 	config.usage.shutdownOK.setValue(True)

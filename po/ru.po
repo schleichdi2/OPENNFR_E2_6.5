@@ -8995,10 +8995,10 @@ msgstr ""
 #, python-format
 msgid ""
 "The user interface of your %s %s is restarting\n"
-"due to an error in mytest.py"
+"due to an error in StartEnigma.py"
 msgstr ""
 "%s %s перезапускает пользовательский интерфейс\n"
-"из-за ошибки в файле mytest.py"
+"из-за ошибки в файле StartEnigma.py"
 
 msgid ""
 "The wireless LAN plugin is not installed!\n"
