@@ -17,4 +17,4 @@ install_PYTHON = \
 	GlobalActions.py \
 	e2reactor.py \ 
 	pyo_patcher.py \ 
-	BoxBrandingTest.py \
+	BoxBrandingTest.py
