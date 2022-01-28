@@ -40,7 +40,7 @@
 		<!--widget source="session.Event_Now" render="Progress" position="0,155" size="130,14" borderWidth="3" >
 			<convert type="EventTime">Progress</convert>
 		</widget-->
-		<widget source="session.RecordState" render="FixedLabel" text="Record" position="center,140" foregroundColor="#ff0000" size="100,25" font="RegularLCD;25" zPosition="0" noWrap="1">
+		<widget source="session.RecordState" render="FixedLabel" text="Record" position="center,140" foregroundColor="#ff0000" size="100,25" font="RegularLCD;25" zPosition="5" noWrap="1">
 			<convert type="ConditionalShowHide">Blink</convert>
 		</widget>
 	</screen>
