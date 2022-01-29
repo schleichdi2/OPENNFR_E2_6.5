@@ -132,7 +132,7 @@ class SABnzbdSetupScreen(Screen):
 	def updateService(self,result = None, retval = None, extra_args = None):
 		import process
 		p = process.ProcessList()
-		sabnzbd_process = str(p.named('SABnzbd.py')).strip('[]')
+		sabnzbd_process = str(p.named('SABnzbd.pyc')).strip('[]')
 		self['labrun'].hide()
 		self['labstop'].hide()
 		self['labactive'].setText(_("Disabled"))
