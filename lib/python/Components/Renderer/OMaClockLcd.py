@@ -44,7 +44,7 @@ class OMaClockLcd(Renderer):
 
 	def applySkin(self, desktop, parent):
 		attribs = []
-		for (attrib, what,) in self.skinAttributes:
+		for (attrib, what) in self.skinAttributes:
 			if (attrib == 'hColor'):
 				self.fColorh = parseColor(what)
 			elif (attrib == 'mColor'):
@@ -60,7 +60,7 @@ class OMaClockLcd(Renderer):
 
 	def calc(self, w, r, m, m1):
 		a = (w * 6)
-		z = (math.pi / 180)
+		z = (math.pi // 180)
 		x = int(round((r * math.sin((a * z)))))
 		y = int(round((r * math.cos((a * z)))))
 		return ((m + x), (m1 - y))
@@ -86,8 +86,8 @@ class OMaClockLcd(Renderer):
 			width = 218
 			height = 176
 			l = 35
-		r = (width / 2)
-		r1 = (height / 2)
+		r = (width // 2)
+		r1 = (height // 2)
 
 		if opt == 'sec':
 			if LCDSIZE400:
@@ -132,7 +132,7 @@ class OMaClockLcd(Renderer):
 			ystep = -1
 		deltax = (x1 - x0)
 		deltay = abs((y1 - y0))
-		error = (-deltax / 2)
+		error = (-deltax // 2)
 		y = y0
 		for x in list(range(x0, (x1 + 1))):
 			if steep:
@@ -163,11 +163,11 @@ class OMaClockLcd(Renderer):
 				self.hand(opt[1])
 
 	def parseSize(self, str):
-		(x, y,) = str.split(',')
+		(x, y) = str.split(',')
 		return eSize(int(x), int(y))
 
 	def postWidgetCreate(self, instance):
-		for (attrib, value,) in self.skinAttributes:
+		for (attrib, value) in self.skinAttributes:
 			if ((attrib == 'size') and self.instance.setSize(self.parseSize(value))):
 				pass
 		self.instance.clear(self.bColor)
