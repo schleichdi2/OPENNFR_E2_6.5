@@ -1185,11 +1185,11 @@ void eEPGChannelData::log_add (const char *message, ...)
 	va_list args;
 	char msg[16*1024];
 	time_t now_time;
-	struct tm *loctime;
+	struct tm loctime;
 
 	now_time = time (NULL);
-	loctime = localtime (&now_time);
-	strftime (msg, 255, "%d/%m/%Y %H:%M:%S ", loctime);
+	localtime_r(&now_time, &loctime);
+	strftime (msg, 255, "%d/%m/%Y %H:%M:%S ", &loctime);
 	 
 	if (log_file != NULL) fwrite (msg, strlen (msg), 1, log_file);
 
@@ -1269,10 +1269,10 @@ void eEPGChannelData::readMHWData(const uint8_t *data)
 
 		char dated[22];
 		time_t now_time;
-		struct tm *loctime;
+		struct tm loctime;
 		now_time = time (NULL);
-		loctime = localtime (&now_time);
-		strftime (dated, 21, "%d/%m/%Y %H:%M:%S", loctime);
+		localtime_r(&now_time, &loctime);
+		strftime (dated, 21, "%d/%m/%Y %H:%M:%S", &loctime);
 		if (f)
 		{
 			fprintf(f,"#########################################\n");
@@ -1303,7 +1303,7 @@ void eEPGChannelData::readMHWData(const uint8_t *data)
 		fclose(f);
 		log_open();
 		log_add("EPG download in Mediahighway");
-		log_add("Channels nbr.: %d",m_channels.size());
+		log_add("Channels nbr.: %zu",m_channels.size());
 		log_add("Equivalences Nbr.: %d",nb_equiv);
 
 		// Channels table has been read, start reading the themes table.
@@ -1383,8 +1383,8 @@ void eEPGChannelData::readMHWData(const uint8_t *data)
 			eDebug("[eEPGChannelData] mhw %zu titles(%zu with summary) found",
 				m_titles.size(),
 				m_program_ids.size());
-			log_add("Titles Nbr.: %d",m_titles.size());
-			log_add("Titles Nbr. with summary: %d",m_program_ids.size());
+			log_add("Titles Nbr.: %zu",m_titles.size());
+			log_add("Titles Nbr. with summary: %zu",m_program_ids.size());
 			startMHWTimeout(5000);
 			return;
 		}
@@ -1437,7 +1437,7 @@ void eEPGChannelData::readMHWData(const uint8_t *data)
 	eDebug("[eEPGChannelData] mhw finished(%ld) %zu summaries not found",
 		::time(0),
 		m_program_ids.size());
-	log_add("Summaries not found: %d",m_program_ids.size());
+	log_add("Summaries not found: %zu",m_program_ids.size());
 	// Summaries have been read, titles that have summaries have been stored.
 	// Now store titles that do not have summaries.
 	for (std::map<uint32_t, mhw_title_t>::iterator itTitle(m_titles.begin()); itTitle != m_titles.end(); itTitle++)
@@ -1493,10 +1493,10 @@ void eEPGChannelData::readMHWData2(const uint8_t *data)
 
 		char dated[22];
 		time_t now_time;
-		struct tm *loctime;
+		struct tm loctime;
 		now_time = time (NULL);
-		loctime = localtime (&now_time);
-		strftime (dated, 21, "%d/%m/%Y %H:%M:%S", loctime);
+		localtime_r(&now_time, &loctime);
+		strftime (dated, 21, "%d/%m/%Y %H:%M:%S", &loctime);
 		if (f)
 		{
 			fprintf(f,"#########################################\n");
@@ -1719,8 +1719,8 @@ void eEPGChannelData::readMHWData2(const uint8_t *data)
 		}
 		if (checkMHWTimeout())
 		{
-			eDebug("[eEPGChannelData] mhw2 %d titles(%d with summary) found", m_titles.size(), m_program_ids.size());
-			log_add("Titles Nbr.: %d",m_titlesID.size());
+			eDebug("[eEPGChannelData] mhw2 %zu titles(%zu with summary) found", m_titles.size(), m_program_ids.size());
+			log_add("Titles Nbr.: %zu",m_titlesID.size());
 			log_add("Titles Nbr. with summary: %d",nbr_summary);
 			if (!m_program_ids.empty())
 			{
@@ -1806,7 +1806,7 @@ void eEPGChannelData::readMHWData2(const uint8_t *data)
 
 									int chid = it->second.channel_id - 1;
 									time_t ndate, edate;
-									struct tm *next_date;
+									struct tm next_date;
 									u_char mhw2_mjd_hi = data[pos+10];
 									u_char mhw2_mjd_lo = data[pos+11];
 									u_char mhw2_hours = data[pos+12];
@@ -1815,13 +1815,13 @@ void eEPGChannelData::readMHWData2(const uint8_t *data)
 									edate = MjdToEpochTime(itTitle->second.mhw2_mjd)
 									+ (((itTitle->second.mhw2_hours&0xf0)>>4)*10+(itTitle->second.mhw2_hours&0x0f)) * 3600 
 									+ (((itTitle->second.mhw2_minutes&0xf0)>>4)*10+(itTitle->second.mhw2_minutes&0x0f)) * 60;
-									next_date = localtime(&ndate);
-										if (ndate > edate)
-										{
+									localtime_r(&ndate, &next_date);
+									if (ndate > edate)
+									{
 										char nd[200];
-													sprintf (nd," %s %s%02d %02d:%02d",m_channels[chid].name,days[next_date->tm_wday],next_date->tm_mday,next_date->tm_hour, next_date->tm_min);
+										sprintf (nd," %s %s%02d %02d:%02d",m_channels[chid].name,days[next_date.tm_wday],next_date.tm_mday,next_date.tm_hour, next_date.tm_min);
 										the_text2.append(nd);
-										}
+									}
 								}
 								pos += 19;
 							}
@@ -1860,10 +1860,10 @@ void eEPGChannelData::readMHWData2(const uint8_t *data)
 			// Now store titles that do not have summaries.
 			for (std::map<uint32_t, mhw_title_t>::iterator itTitle(m_titles.begin()); itTitle != m_titles.end(); itTitle++)
 				storeMHWTitle( itTitle, "", data );
-			eDebug("[eEPGChannelData] mhw2 finished(%ld) %d summaries not found",
+			eDebug("[eEPGChannelData] mhw2 finished(%ld) %zu summaries not found",
 				::time(0),
 				m_program_ids.size());
-			log_add("Summaries not found: %d",m_program_ids.size());
+			log_add("Summaries not found: %zu",m_program_ids.size());
 			log_add("mhw2 EPG download finished");
 		}
 	}
@@ -1919,10 +1919,10 @@ void eEPGChannelData::readMHWData2_old(const uint8_t *data)
 
 		char dated[22];
 		time_t now_time;
-		struct tm *loctime;
+		struct tm loctime;
 		now_time = time (NULL);
-		loctime = localtime (&now_time);
-		strftime (dated, 21, "%d/%m/%Y %H:%M:%S", loctime);
+		localtime_r(&now_time, &loctime);
+		strftime (dated, 21, "%d/%m/%Y %H:%M:%S", &loctime);
 		if (f)
 		{
 			fprintf(f,"#########################################\n");
@@ -1970,7 +1970,7 @@ void eEPGChannelData::readMHWData2_old(const uint8_t *data)
 		log_add("Equivalences Nbr.: %d",nb_equiv);
 
 		haveData |= eEPGCache::MHW;
-		eDebug("[eEPGChannelData] mhw2 %d channels found", m_channels.size());
+		eDebug("[eEPGChannelData] mhw2 %zu channels found", m_channels.size());
 	}
 	else if (m_MHWFilterMask2.pid == m_mhw2_channel_pid && m_MHWFilterMask2.data[0] == 0xC8 && m_MHWFilterMask2.data[1] == 1)
 	{
@@ -2080,9 +2080,9 @@ void eEPGChannelData::readMHWData2_old(const uint8_t *data)
 		}
 		if (finish)
 		{
-			eDebug("[eEPGChannelData] mhw2 %zu titles(%d with summary) found", m_titles.size(), m_program_ids.size());
-			log_add("Titles Nbr.: %d",m_titles.size());
-			log_add("Titles Nbr. with summary: %d",m_program_ids.size());
+			eDebug("[eEPGChannelData] mhw2 %zu titles(%zu with summary) found", m_titles.size(), m_program_ids.size());
+			log_add("Titles Nbr.: %zu",m_titles.size());
+			log_add("Titles Nbr. with summary: %zu",m_program_ids.size());
 			if (!m_program_ids.empty())
 			{
 				// Titles table has been read, there are summaries to read.
@@ -2208,16 +2208,16 @@ void eEPGChannelData::readMHWData2_old(const uint8_t *data)
 								char const *const days[] = {"D", "L", "M", "M", "J", "V", "S", "D"};
 
 								time_t ndate, edate;
-								struct tm *next_date;
-											ndate = replay_time[n];
+								struct tm next_date;
+								ndate = replay_time[n];
 								edate = MjdToEpochTime(itTitle->second.mhw2_mjd) 
 									+ (((itTitle->second.mhw2_hours&0xf0)>>4)*10+(itTitle->second.mhw2_hours&0x0f)) * 3600 
 									+ (((itTitle->second.mhw2_minutes&0xf0)>>4)*10+(itTitle->second.mhw2_minutes&0x0f)) * 60;
-								next_date = localtime(&ndate);
+								localtime_r(&ndate, &next_date);
 								if (ndate > edate)
 								{
 									char nd[200];
-									sprintf (nd," %s %s%02d %02d:%02d",m_channels[replay_chid[n]].name,days[next_date->tm_wday],next_date->tm_mday,next_date->tm_hour, next_date->tm_min);
+									sprintf (nd," %s %s%02d %02d:%02d",m_channels[replay_chid[n]].name,days[next_date.tm_wday],next_date.tm_mday,next_date.tm_hour, next_date.tm_min);
 									the_text2.append(nd);
 								}
 								n++;
@@ -2259,7 +2259,7 @@ void eEPGChannelData::readMHWData2_old(const uint8_t *data)
 			eDebug("[eEPGChannelData] mhw2 finished(%ld) %zu summaries not found",
 				::time(0),
 				m_program_ids.size());
-			log_add("Summaries not found: %d",m_program_ids.size());
+			log_add("Summaries not found: %zu",m_program_ids.size());
 			log_add("mhw2 EPG download finished");
 		}
 	}
