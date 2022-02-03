@@ -1,8 +1,5 @@
 from __future__ import print_function
 from __future__ import absolute_import
-from os import path, makedirs, listdir, stat, rename, remove, removedirs
-from datetime import date
-from time import time, strftime, localtime
 from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
 from Screens.Console import Console
@@ -638,7 +635,12 @@ class RestorePlugins(Screen):
 		self.selectionChanged()
 		self.setTitle(_("Restore Plugins"))
 		if pathexists("/media/hdd/images/config/plugins") and config.misc.firstrun.value:
-			os.system("rm /media/hdd/images/config/plugins")
+			from pathlib import Path
+			file_path = Path('/media/hdd/images/config/plugins')
+			try:
+				file_path.unlink()
+			except OSError as e:
+				print("Error: %s : %s" % (file_path, e.strerror))
 			self.green()
 
 	def exit(self):
